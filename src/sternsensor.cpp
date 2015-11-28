@@ -1,6 +1,7 @@
 //Uebung 2 LRD Beispiel
 //This Program has a problem: X is vertical, Y is horizontal
 
+#include <stdint.h>
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
