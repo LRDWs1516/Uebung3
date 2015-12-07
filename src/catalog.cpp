@@ -128,9 +128,9 @@ public:
 
 TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 
-	double alpha1;
+	double alpha1=360;
 	StarCatalogEntry *star1;
-	double alpha2;
+	double alpha2=360;
 	StarCatalogEntry *star2;
 
 	StarCatalogEntry *star= this -> head_starlog->next;	
@@ -138,12 +138,14 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 	double thisalpha;
 	while(star!= NULL){
 		if (star->id!=self->id){
-			thisalpha=(self->elevation)-(star->elevation);
-
-			if(thisalpha< alpha1 || alpha1==NULL){
+			//Hier bin ich mir nicht sicher ob die Winkel so richtig berechnet werden zwischen zwei beliebigen sternen zum hauptstern
+			
+			thisalpha=fabs((self->elevation)-(star->elevation));
+			int nr=star->id;		
+			if(thisalpha< fabs(alpha1)){
 				star1=star;
 				alpha1=thisalpha;
-			}else if(thisalpha< alpha2 || alpha2==NULL){
+			}else if(thisalpha< fabs(alpha2) && star->id != star1->id){			
 				star2=star;
 				alpha2=thisalpha;
 			}
@@ -152,8 +154,9 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 		star=star->next;
 	}
 	
-	double beta= 180-(alpha1+alpha2);
+	double beta= fmod(180.0-fabs(alpha1+alpha2), 360.0);
 	TriangleCatalogEntry t= TriangleCatalogEntry(self->id, star1->id, star2->id,beta, alpha1, alpha2);
+	printf("self %d id2 %d id3 %d beta %f alpha1 %f alpha2 %f \n", t.id1, t.id2,t.id3,t.beta,t.alpha1,t.alpha2);
 	return t;
 }
 
@@ -209,15 +212,14 @@ void Catalog::makeCatalog(){
 	}	
 
 	StarCatalogEntry *star=this->head_starlog->next;
-	printf("Trianglecatalog index %d\n", star->id);
 	TriangleCatalogEntry *t_before=this->head_trilog;
-//	while (star!=NULL){
-//		printf("Trianglecatalog index %d", star->id);
-//		TriangleCatalogEntry t=searchTriangle(star);
-//		t.setBefore(t_before);
-//		t_before=&t;
-//		star=star->next;
-//	}
+	while (star!=NULL){
+		printf("Trianglecatalog index %d \n", star->id);
+		TriangleCatalogEntry t=searchTriangle(star);
+		t.setBefore(t_before);
+		t_before=&t;
+		star=star->next;
+	}
 	
 }	
 
