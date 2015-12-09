@@ -65,9 +65,11 @@ class PointArray{
 public:
 	void fill(Image &, int);
 	void fill2(Image &, int);
+	bool getCentrals(int);
 	vector<Point2D> getAllPoints();
 	vector<Point2D> allPoints;
 	vector<Point2D> startPoints;
+	vector<Point2D> centralPoints;
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 private:
@@ -75,6 +77,7 @@ private:
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
 	vector<Point2D> followOutline(Point2D &, Image &);
 	vector<Point2D> calcOverlay(Point2D &, Image &, int);
+	Point2D getCenter(vector<Point2D>);
 	bool isOutline(Point2D &, Image &);
 };
 

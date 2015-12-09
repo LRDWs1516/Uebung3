@@ -88,9 +88,11 @@ class PointArray{
 public:
 	void fill(Image &, int);
 	void fill2(Image &, int);
+	bool getCentrals(int);
 	vector<Point2D> getAllPoints();
 	vector<Point2D> allPoints;
 	vector<Point2D> startPoints;
+	vector<Point2D> centralPoints;
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 private:
@@ -98,6 +100,7 @@ private:
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
 	vector<Point2D> followOutline(Point2D &, Image &);
 	vector<Point2D> calcOverlay(Point2D &, Image &, int);
+	Point2D getCenter(vector<Point2D>);
 	bool isOutline(Point2D &, Image &);
 };
 
@@ -436,7 +439,7 @@ void Image::addImage(Image second){
 void Image::drawArrayToImage(vector<Point2D> & outline, Color fill){
 	//Color fill(255,255,0);
 	for(int i = 0; i<outline.size(); i++){
-		Matrix.at(outline.at(i).x).at(outline.at(i).y) = fill;
+		Matrix.at((int)outline.at(i).x).at((int)outline.at(i).y) = fill;
 	}
 }
 
@@ -589,6 +592,30 @@ void PointArray::fill2(Image & input, int type)
 			}
 		}
 	}
+}
+
+Point2D PointArray::getCenter(vector<Point2D> object){
+	Point2D center;
+	int obsize = object.size();
+	for(int i = 0; i<obsize; i++){
+		center.x += object.at(i).x/((double)(obsize));
+		center.y += object.at(i).y/((double)(obsize));
+	}
+	return center;
+}
+
+bool PointArray::getCentrals(int type){
+	try{
+		if(type != 0) throw type;
+		for(int i = 0; i<this->allObjects.size(); i++){
+			this->centralPoints.push_back(getCenter(allObjects.at(i)));
+		}
+		return true;
+	}catch(int e){
+		cout << "wrong type: " << e << endl;
+		terminate();
+	}
+	return false;
 }
 
 //Get's image width from Windows BITMAPINFOHEADER
