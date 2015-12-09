@@ -3,7 +3,6 @@
 
 #include "catalog.h"
 #include "bildmanipulation.h"
-using namespace std;
 
 int main() {
 
