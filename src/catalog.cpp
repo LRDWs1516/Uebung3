@@ -43,7 +43,6 @@ StarCatalogEntry::StarCatalogEntry(StarCatalogEntry *before,
 }
 
 StarCatalogEntry::StarCatalogEntry(){
-
 	this->next=NULL;
 	this->id=-88;
 	this->before=NULL;
@@ -51,7 +50,6 @@ StarCatalogEntry::StarCatalogEntry(){
 
 void StarCatalogEntry::setNext(StarCatalogEntry *next){
 		this->next=next;
-
 }
 
 
@@ -121,7 +119,7 @@ class Catalog{
 public:
 	StarCatalogEntry *head_starlog = new StarCatalogEntry();
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
-	void makeCatalog();
+	void makeCatalog(const char * fname);
 	TriangleCatalogEntry searchTriangle(StarCatalogEntry* );	
 
 };
@@ -175,15 +173,26 @@ int getNumberOfLines(FILE *fp){
 
 }
 
+int getNumberofLines(ifstream & file){
 
-void Catalog::makeCatalog(){
+    int lines = 0;
+    string line;
+
+    if(!file.is_open()) return -1; //catch closed streams
+
+    while (getline(file, line)) lines++; //count lines
+    return lines;
+}
+
+
+void Catalog::makeCatalog(const char * fname){
 	
 	printf("Start Creating Catalogs\n");
-	FILE *file;
-	file= fopen("catalog.txt", "r");
-	double size=getNumberOfLines(file);
-	fclose(file);
-	file= fopen("catalog.txt", "r");
+	FILE *file;//ifstream fl;
+	file= fopen(fname, "r");//fl.open("catalog.txt", ios::in | ios::binary);
+	double size=getNumberOfLines(file); //double size = getNumberofLines(fl);
+	fclose(file);//fl.seekg(0, fl.beg);
+	file= fopen(fname, "r");
 	
 	double azimut,elevation,mag;
 	int index; 

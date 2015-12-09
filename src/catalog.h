@@ -13,6 +13,9 @@
 
 using namespace std;
 
+int getNumberOfLines(FILE);
+int getNumberofLines(ifstream &);
+
 class StarCatalogEntry{
 public:
 		StarCatalogEntry *before;
@@ -57,11 +60,9 @@ class Catalog{
 public:
 	StarCatalogEntry *head_starlog = new StarCatalogEntry();
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
-	void makeCatalog();
+	void makeCatalog(const char * fname);
 	TriangleCatalogEntry searchTriangle(StarCatalogEntry* );
 
 };
-
-int getNumberOfLines(FILE);
 
 #endif

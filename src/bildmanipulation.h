@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
-#include "catalog.h"
 using namespace std;
 
 int getW(ifstream & , int);

@@ -3,6 +3,7 @@
 
 #include "catalog.h"
 #include "bildmanipulation.h"
+#include "catalogmanipulation.h"
 
 int main() {
 
@@ -39,7 +40,7 @@ int main() {
 
     cout << "Catalogmaking:" << endl;
 	Catalog c;
-	c.makeCatalog();
+	c.makeCatalog("catalog.txt");
 	cout << "Done" << endl;
 
     return 0;
