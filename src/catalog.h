@@ -30,7 +30,6 @@ public:
 
 		StarCatalogEntry();
 		StarCatalogEntry(StarCatalogEntry*, int, double, double, double, double, double, double);
-
 		void setNext(StarCatalogEntry*);
 		StarCatalogEntry* getNext();
 };
@@ -58,11 +57,17 @@ public:
 
 class Catalog{
 public:
+	int cSize;
 	StarCatalogEntry *head_starlog = new StarCatalogEntry();
+	StarCatalogEntry *current;
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
 	void makeCatalog(const char * fname);
+	void printCatalog();
 	TriangleCatalogEntry searchTriangle(StarCatalogEntry* );
-
+	StarCatalogEntry& operator++(int);
+	StarCatalogEntry& operator--(int);
+	int size();
+	void reset();
 };
 
 #endif

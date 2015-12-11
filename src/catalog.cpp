@@ -7,9 +7,10 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
+#include "catalog.h"
 
 using namespace std;
-
+/*
 class StarCatalogEntry{
 public:
 		StarCatalogEntry *before;
@@ -27,7 +28,7 @@ public:
 
 		void setNext(StarCatalogEntry*);
 		StarCatalogEntry* getNext();
-};
+};*/
 
 StarCatalogEntry::StarCatalogEntry(StarCatalogEntry *before, 
  int id, double x, double y, double z, double mag, double azimut, double elevation){
@@ -60,7 +61,7 @@ StarCatalogEntry* StarCatalogEntry::getNext(){
 
 }
 
-
+/*
 class TriangleCatalogEntry{
 public:
 	TriangleCatalogEntry *before;
@@ -81,6 +82,8 @@ public:
 	TriangleCatalogEntry* getBefore();
 	TriangleCatalogEntry* getNext();
 };
+*/
+
 TriangleCatalogEntry::TriangleCatalogEntry(){
 	this->before=NULL;
 	this->next=NULL;
@@ -114,16 +117,17 @@ TriangleCatalogEntry* TriangleCatalogEntry::getNext(){
 	return this->next;
 }
 
-
+/*
 class Catalog{
 public:
 	StarCatalogEntry *head_starlog = new StarCatalogEntry();
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
 	void makeCatalog(const char * fname);
+	void printCatalog();
 	TriangleCatalogEntry searchTriangle(StarCatalogEntry* );	
 
 };
-
+*/
 TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 
 	double alpha1=360;
@@ -184,53 +188,74 @@ int getNumberofLines(ifstream & file){
     return lines;
 }
 
+void Catalog::printCatalog(){
+	StarCatalogEntry *star=this->head_starlog->next;
+	TriangleCatalogEntry *t_before=this->head_trilog;
+	while (star!=NULL){
+		printf("index %d ", star->id);
+		printf("coord: %f, %f\n", star->azimut, star->elevation);
+		TriangleCatalogEntry t=searchTriangle(star);
+		t.setBefore(t_before);
+		t_before=&t;
+		star=star->next;
+	}
+}
+
 
 void Catalog::makeCatalog(const char * fname){
-	
+	this->cSize = 0;
 	printf("Start Creating Catalogs\n");
-	FILE *file;//ifstream fl;
-	file= fopen(fname, "r");//fl.open("catalog.txt", ios::in | ios::binary);
-	double size=getNumberOfLines(file); //double size = getNumberofLines(fl);
-	fclose(file);//fl.seekg(0, fl.beg);
+	FILE *file;
+	file= fopen(fname, "r");
+	double size=getNumberOfLines(file);
+	fclose(file);
 	file= fopen(fname, "r");
 	
 	double azimut,elevation,mag;
 	int index; 
-	StarCatalogEntry  *s_before=this->head_starlog;
+	StarCatalogEntry *s_before = this->head_starlog;
 	//printf(" vorgänger  (head) %d \n",s_before->id);
 	StarCatalogEntry  *next;	
 	double x,y,z;
 	while(!feof(file)){
 		//**Sternenkatalog wird als Verkettete Liste gespeichert**
 		
-		fscanf(file, "%d %lf %lf %lf\n", &index, &azimut,&elevation,&mag ); 	
+		fscanf(file, "%d %lf %lf %lf\n", &index, &azimut,&elevation,&mag );
 		if (mag<6.5){		
-			//printf(" Starcatalog index %d  \n", index);
 			double f=0.25; //Brennweite in Millimeter...vielleicht lieber 10 pc ??, radius eig egal!
 			//**Umrechnung in Kartesische Koordinaten**	
 			x= f*sin(elevation)*cos(azimut);
-			y=f*sin(elevation)*sin(azimut);
-			z=f*cos(elevation);
+			y= f*sin(elevation)*sin(azimut);
+			z= f*cos(elevation);
 			StarCatalogEntry *e= new StarCatalogEntry(s_before,index, x,y,z,mag, azimut, elevation);
-			//printf(" vorgänger %d \n",e->before->id);
 			s_before->next= e;
-			//printf(" NACHfolger des vorgänger %d \n",e->before->next->id);	
-			//printf("-------------------------------------------------------------\n");	
-			s_before=e;	
+			s_before=e;
+			cSize++;
 		}
-	}	
-
-	StarCatalogEntry *star=this->head_starlog->next;
-	TriangleCatalogEntry *t_before=this->head_trilog;
-	while (star!=NULL){
-		//printf("Trianglecatalog index %d \n", star->id);
-		TriangleCatalogEntry t=searchTriangle(star);
-		t.setBefore(t_before);
-		t_before=&t;
-		star=star->next;
 	}
-	
-}	
+	this->head_starlog = this->head_starlog->next;
+	this->head_starlog->before = NULL;
+	this->current = this->head_starlog;
+}
+
+StarCatalogEntry& Catalog::operator++(int i){
+	this->current = this->current->next;
+	return *this->current;
+}
+
+StarCatalogEntry& Catalog::operator--(int i){
+	this->current = this->current->before;
+	return *this->current;
+}
+
+int Catalog::size() {
+	return this->cSize;
+
+}
+
+void Catalog::reset(){
+	this->current = this->head_starlog;
+}
 	
 
 
