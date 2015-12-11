@@ -4,8 +4,6 @@
 #include "catalog.h"
 #include "bildmanipulation.h"
 #include "catalogmanipulation.h"
-#include <exception>
-#include <stdexcept>
 
 int main() {
 
