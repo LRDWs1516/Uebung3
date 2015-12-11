@@ -34,9 +34,6 @@ void StarCatalogEntry::setNext(StarCatalogEntry *next){
 		this->next=next;
 }
 
-
-
-
 StarCatalogEntry* StarCatalogEntry::getNext(){
 		return this->next;
 
@@ -46,7 +43,6 @@ TriangleCatalogEntry::TriangleCatalogEntry(){
 	this->before=NULL;
 	this->next=NULL;
 }
-
 
 //Eintrag für ein Dreieck, immer das kleinste
 TriangleCatalogEntry::TriangleCatalogEntry(int id1, int id2, int id3, double beta, double alpha1, double alpha2){
@@ -203,6 +199,3 @@ int Catalog::size() {
 void Catalog::reset(){
 	this->current = this->head_starlog;
 }
-	
-
-
