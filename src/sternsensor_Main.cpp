@@ -46,15 +46,13 @@ int main() {
 	printf("id: %d\n", c.head_starlog->id);
 
 	//Simple Iteratorversuche
-	for(c.reset(); c.current->next != NULL; c++){
-		printf("id: %d\n", c.current->id);
+	while(c.current->next != NULL){
+		printf("id: %d\n",c++.id);
 	}
-	printf("id: %d\n", c.current->id);
 
-	for(c; c.current->before != NULL; c--){
-		printf("id: %d\n", c.current->id);
+	while(c.current->before != NULL){
+		printf("id: %d\n",c--.id);
 	}
-	printf("id: %d\n", c.current->id);
 
 	cout << c.size() << endl;
 
