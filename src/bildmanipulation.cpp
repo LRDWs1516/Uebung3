@@ -107,7 +107,6 @@ public:
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
 	int findClosest(Point2D, double);
-	double getAlpha(int, int, double);
 	vector<Point2D> getCentralTriangle(Image &);
 private:
 	int vSize;
@@ -640,12 +639,6 @@ int PointArray::findClosest(Point2D center, double thres){
 		}
 	}
 	return resultID;
-}
-
-double PointArray::getAlpha(int id1, int id2, double infAng){
-	double dist = this->centralPoints.at(id1).getDistance(this->centralPoints.at(id2));
-	dist *= infAng;
-	return dist;
 }
 
 vector<Point2D> PointArray::getCentralTriangle(Image & im){

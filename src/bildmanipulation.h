@@ -76,7 +76,6 @@ public:
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
 	int findClosest(Point2D, double);
-	double getAlpha(int, int, double);
 	vector<Point2D> getCentralTriangle(Image &);
 private:
 	int vSize;

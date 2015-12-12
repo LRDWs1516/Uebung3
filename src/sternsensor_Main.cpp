@@ -53,8 +53,6 @@ int main() {
 
     first.writeImageToFile("sterne4.bmp");
 
-    cout << "Done!" << endl;
-
     cout << "Catalogmaking:" << endl << endl;
 	Catalog c;
 	c.makeCatalog("catalog.txt");
