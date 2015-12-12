@@ -25,8 +25,8 @@ public:
 		double y;
 		double z;
 		double mag;
-		double azimut;
-		double elevation;
+		double rectascension;
+		double declination;
 
 		StarCatalogEntry();
 		StarCatalogEntry(StarCatalogEntry*, int, double, double, double, double, double, double);
