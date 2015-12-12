@@ -10,10 +10,12 @@
 #include "bildmanipulation.h"
 #include "catalog.h"
 
+bool comparator(double, double);
+
 class Finder{
 public:
-	Finder();
-	TriangleCatalogEntry getMatch();
+	Finder(TriangleCatalogEntry *);
+	TriangleCatalogEntry getMatch(double,double,double);
 private:
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
 	TriangleCatalogEntry match;

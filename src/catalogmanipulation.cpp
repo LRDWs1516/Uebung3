@@ -6,11 +6,11 @@
  */
 #include "catalogmanipulation.h"
 
-bool TriangleCatalogEntry:: comparator (double i,double j) { 
+bool comparator (double i,double j) {
 	return (i<j); 
 }
 
-TriangleCatalogEntry Finder::Finder(TriangleCatalogEntry *head_trilog){
+Finder::Finder(TriangleCatalogEntry *head_trilog){
 
 	this->head_trilog=head_trilog;
 }

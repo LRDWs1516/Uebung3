@@ -25,6 +25,7 @@ public:
 	double y;
 	Point2D();
 	Point2D(double, double);
+	double getDistance(Point2D);
 };
 
 Point2D::Point2D(){
@@ -35,6 +36,10 @@ Point2D::Point2D(){
 Point2D::Point2D(double x, double y){
 	this->x = x;
 	this->y = y;
+}
+
+double Point2D::getDistance(Point2D second){
+	return sqrt((this->x-second.x)*(this->x-second.x) + (this->y-second.y)*(this->y-second.y));
 }
 
 class Color{
@@ -95,6 +100,7 @@ public:
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
+	vector<Point2D> findClosest(Point2D);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
@@ -605,13 +611,23 @@ Point2D PointArray::getCenter(vector<Point2D> object){
 }
 
 void PointArray::getCentrals(){
-		for(int i = 0; i<this->allObjects.size(); i++){
-			this->centralPoints.push_back(getCenter(allObjects.at(i)));
-		}
+	for(int i = 0; i<this->allObjects.size(); i++){
+		this->centralPoints.push_back(getCenter(allObjects.at(i)));
+	}
 }
 
 Point2D PointArray::getCenterof(int i){
 	return this->centralPoints.at(i);
+}
+
+vector<Point2D> PointArray::findClosest(Point2D){
+	vector<Point2D> resultVec;
+
+	for(int i = 0; i<this->centralPoints.size(); i++){
+
+	}
+
+	return resultVec;
 }
 
 //Get's image width from Windows BITMAPINFOHEADER
@@ -681,4 +697,10 @@ Point2D getfov(double f, double px, Image im){
  	a_v[1]=2.0*atan((im.h*px*0.000001)/(2.0*f/1000.0));
 	Point2D returnP(a_v[0], a_v[1]);
 	return returnP;
+}
+
+double getAvgAng(Point2D angs, Image im){
+	double a = angs.x / im.w;
+	double b = angs.y / im.h;
+	return a;
 }

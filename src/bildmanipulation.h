@@ -24,6 +24,7 @@ public:
 	double y;
 	Point2D();
 	Point2D(double, double);
+	double getDistance(Point2D);
 };
 
 class Color{
@@ -72,6 +73,7 @@ public:
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
+	vector<Point2D> findClosest(Point2D);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
@@ -82,5 +84,6 @@ private:
 };
 
 Point2D getfov(double, double, Image);
+double getAvgAng(Point2D, Image);
 
 #endif

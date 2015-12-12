@@ -52,8 +52,6 @@ int main() {
 	Catalog c;
 	c.makeCatalog("catalog.txt");
 	c.setTriangleCatalog();
-	printf("id: %d\n", c.current->id);
-	printf("id: %d\n", c.head_starlog->id);
 
 	//Simple Iteratorversuche
 	/*while(c.current->next != NULL){
@@ -65,8 +63,9 @@ int main() {
 	}*/
 
 	Point2D angs = getfov(FOCUS, PIXELSIZE, first);
-
-	cout << "FOV: " << angs.x << " " << angs.y << endl;
+	double avgAngpPix = getAvgAng(angs, first);
+	cout << "FOV: " << angs.x*180/M_PI << " " << angs.y*180/M_PI << endl;
+	cout << "norm fov: " <<  avgAngpPix*first.w*180/M_PI << endl;
 
 	cout << "Done" << endl;
 
