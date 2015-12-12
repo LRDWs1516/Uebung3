@@ -678,3 +678,15 @@ void sleepcp(int milliseconds) // cross-platform sleep function
     }
 }
 
+double getf(double d, double L, double R){
+	double o=d*L;
+	double u=2.0*R;
+	double f=o/u;
+	return f;
+
+}
+
+double getfov(double f){
+ 	double a_v=2.0*atan((1024*5.6*0.000001)/(2.0*f));
+	return a_v;
+}
