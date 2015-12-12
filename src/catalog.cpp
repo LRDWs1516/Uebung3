@@ -12,15 +12,15 @@
 using namespace std;
 
 StarCatalogEntry::StarCatalogEntry(StarCatalogEntry *before, 
- int id, double x, double y, double z, double mag, double azimut, double elevation){
+ int id, double x, double y, double z, double mag, double rectascension, double declination){
 		this->before=before;
 		this-> id=id;
 		this -> x=x;
 		this -> y=y;
 		this -> z=z;
 		this -> mag=mag;
-		this -> azimut=azimut;
-		this-> elevation=elevation;
+		this -> rectascension=rectascension;
+		this-> declination=declination;
 		this->next=NULL;
 }
 
@@ -85,7 +85,7 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 		if (star->id!=self->id){
 			//Hier bin ich mir nicht sicher ob die Winkel so richtig berechnet werden zwischen zwei beliebigen sternen zum hauptstern
 			
-			thisalpha=fabs((self->elevation)-(star->elevation));
+			thisalpha=fabs((self->declination)-(star->declination));
 			int nr=star->id;		
 			if(thisalpha< fabs(alpha1)){
 				star1=star;
@@ -152,7 +152,7 @@ void Catalog::makeCatalog(const char * fname){
 	fclose(file);
 	file= fopen(fname, "r");
 	
-	double azimut,elevation,mag;
+	double rectascension,declination,mag;
 	int index; 
 	StarCatalogEntry *s_before = this->head_starlog;
 	//printf(" vorgänger  (head) %d \n",s_before->id);
@@ -161,14 +161,14 @@ void Catalog::makeCatalog(const char * fname){
 	while(!feof(file)){
 		//**Sternenkatalog wird als Verkettete Liste gespeichert**
 		
-		fscanf(file, "%d %lf %lf %lf\n", &index, &azimut,&elevation,&mag );
+		fscanf(file, "%d %lf %lf %lf\n", &index, &rectascension,&declination,&mag );
 		if (mag<6.5){		
 			double f=0.25; //Brennweite in Millimeter...vielleicht lieber 10 pc ??, radius eig egal!
 			//**Umrechnung in Kartesische Koordinaten**	
-			x= f*sin(elevation)*cos(azimut);
-			y= f*sin(elevation)*sin(azimut);
-			z= f*cos(elevation);
-			StarCatalogEntry *e= new StarCatalogEntry(s_before,index, x,y,z,mag, azimut, elevation);
+			x= f*sin(declination)*cos(rectascension);
+			y= f*sin(declination)*sin(rectascension);
+			z= f*cos(declination);
+			StarCatalogEntry *e= new StarCatalogEntry(s_before,index, x,y,z,mag, rectascension, declination);
 			s_before->next= e;
 			s_before=e;
 			cSize++;
