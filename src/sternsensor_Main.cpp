@@ -57,11 +57,9 @@ int main() {
 		printf("id: %d\n",c--.id);
 	}
 
-	double * f = getfov(FOCUS, PIXELSIZE, first);
+	Point2D angs = getfov(FOCUS, PIXELSIZE, first);
 
-	cout << "FOV: " << f[0] << " " << f[1] << endl;
-
-	cout << c.size() << endl;
+	cout << "FOV: " << angs.x << " " << angs.y << endl;
 
 	cout << "Done" << endl;
 

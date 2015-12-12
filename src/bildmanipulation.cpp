@@ -678,9 +678,10 @@ void sleepcp(int milliseconds) // cross-platform sleep function
     }
 }
 
-double * getfov(double f, double px, Image im){
+Point2D getfov(double f, double px, Image im){
 	double a_v[2]; a_v[0] = 0; a_v[1] = 0;
- 	a_v[0]=2.0*atan((im.w*px*0.000001)/(2.0*f));
- 	a_v[1]=2.0*atan((im.h*px*0.000001)/(2.0*f));
-	return a_v;
+ 	a_v[0]=2.0*atan((im.w*px*0.000001)/(2.0*f/1000.0));
+ 	a_v[1]=2.0*atan((im.h*px*0.000001)/(2.0*f/1000.0));
+	Point2D returnP(a_v[0], a_v[1]);
+	return returnP;
 }
