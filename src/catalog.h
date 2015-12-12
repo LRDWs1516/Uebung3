@@ -36,9 +36,9 @@ public:
 
 class TriangleCatalogEntry{
 public:
-	TriangleCatalogEntry *before;
-	TriangleCatalogEntry *next;
-	TriangleCatalogEntry stars[3];
+	TriangleCatalogEntry * before;
+	TriangleCatalogEntry * next;
+	TriangleCatalogEntry * stars[3];
 	int id1;
 	int id2;
 	int id3;
