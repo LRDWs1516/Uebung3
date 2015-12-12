@@ -51,7 +51,7 @@ public:
 	void circleFit(vector<Point2D>);
 	void detectEdges(int, int);
 	void drawRectangle(Point2D, int, Color, int);
-	void drawCross(Point2D, int, Color, int);
+	void drawCross(Point2D &, int, Color, int);
 	void addImage(Image);
 	void getCameraParams();
 	void drawArrayToImage(vector<Point2D> &, Color);
@@ -64,13 +64,14 @@ class PointArray{
 public:
 	void fill(Image &, int);
 	void fill2(Image &, int);
-	bool getCentrals(int);
+	void getCentrals();
 	vector<Point2D> getAllPoints();
 	vector<Point2D> allPoints;
 	vector<Point2D> startPoints;
 	vector<Point2D> centralPoints;
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
+	Point2D getCenterof(int);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);

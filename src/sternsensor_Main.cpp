@@ -14,6 +14,7 @@ int main() {
 	Color red(0,0,255);
 	Color pink(255,0,200);
 	Color black(0,0,0);
+	Color green(0,255,0);
 
     Image first, second;
     PointArray fst;
@@ -25,7 +26,7 @@ int main() {
     first = second;
 
     fst.fill2(second,1); 								//Alle hellen Blobs finden
-    fst.getCentrals(0);									//Zentren der Blobs finden WICHTIG FÜR ERKENNUNG IN STERNENKATALOG
+    fst.getCentrals();									//Zentren der Blobs finden WICHTIG FÜR ERKENNUNG IN STERNENKATALOG
     second.drawBinarysToImage(fst.overlay, pink); 		//Overlay aufzeichnen
     second.drawArrayToImage(fst.startPoints, white); 	//Alle Startpunkte die in fst.fill2() gefunden wurden
     													//gr�n einzeichnen (je nur 1 Pixel pro Objekt)
@@ -37,7 +38,13 @@ int main() {
 		second.drawArrayToImage(fst.allObjects.at(i), Color(50+i*20,100+i*10,200 + i*5));
     }
 
-    second.writeImageToFile("sterne3.bmp"); 			//Bild speichern
+    second.writeImageToFile("sterne3.bmp"); //Bild speichern
+    for(int i = 0; i<fst.centralPoints.size(); i++){
+    	Point2D nowP(fst.getCenterof(i).x, fst.getCenterof(i).y);
+    	first.drawCross(nowP,0,Color(50+i*20,100+i*10,200 + i*5),0);
+    }
+    first.writeImageToFile("sterne4.bmp");
+
 
     cout << "Done!" << endl;
 
@@ -49,13 +56,13 @@ int main() {
 	printf("id: %d\n", c.head_starlog->id);
 
 	//Simple Iteratorversuche
-	while(c.current->next != NULL){
+	/*while(c.current->next != NULL){
 		printf("id: %d\n",c++.id);
 	}
 
 	while(c.current->before != NULL){
 		printf("id: %d\n",c--.id);
-	}
+	}*/
 
 	Point2D angs = getfov(FOCUS, PIXELSIZE, first);
 

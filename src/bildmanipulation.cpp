@@ -73,7 +73,7 @@ public:
 	void circleFit(vector<Point2D>);
 	void detectEdges(int, int);
 	void drawRectangle(Point2D, int, Color, int);
-	void drawCross(Point2D, int, Color, int);
+	void drawCross(Point2D &, int, Color, int);
 	void addImage(Image);
 	void getCameraParams();
 	void drawArrayToImage(vector<Point2D> &, Color);
@@ -87,13 +87,14 @@ class PointArray{
 public:
 	void fill(Image &, int);
 	void fill2(Image &, int);
-	bool getCentrals(int);
+	void getCentrals();
 	vector<Point2D> getAllPoints();
 	vector<Point2D> allPoints;
 	vector<Point2D> startPoints;
 	vector<Point2D> centralPoints;
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
+	Point2D getCenterof(int);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
@@ -377,7 +378,7 @@ void Image::drawRectangle(Point2D position, int size, Color col, int type = 0){
 }
 
 //Basically draws two long Rectangles
-void Image::drawCross(Point2D position, int size, Color col, int type = 0){
+void Image::drawCross(Point2D & position, int size, Color col, int type = 0){
 	unsigned char * color = col.value;
 	for(int x = 0; x<h; x++){
 		for(int y = position.y-size; y<=position.y+size; y++){
@@ -603,18 +604,14 @@ Point2D PointArray::getCenter(vector<Point2D> object){
 	return center;
 }
 
-bool PointArray::getCentrals(int type){
-	try{
-		if(type != 0) throw type;
+void PointArray::getCentrals(){
 		for(int i = 0; i<this->allObjects.size(); i++){
 			this->centralPoints.push_back(getCenter(allObjects.at(i)));
 		}
-		return true;
-	}catch(int e){
-		cout << "wrong type: " << e << endl;
-		terminate();
-	}
-	return false;
+}
+
+Point2D PointArray::getCenterof(int i){
+	return this->centralPoints.at(i);
 }
 
 //Get's image width from Windows BITMAPINFOHEADER
