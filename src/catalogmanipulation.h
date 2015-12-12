@@ -15,7 +15,7 @@ bool comparator(double, double);
 class Finder{
 public:
 	Finder(TriangleCatalogEntry *);
-	TriangleCatalogEntry getMatch(double,double,double);
+	TriangleCatalogEntry* getMatch(double,double,double);
 private:
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
 	TriangleCatalogEntry match;
