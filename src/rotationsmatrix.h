@@ -11,9 +11,6 @@ public:
 	double z;
 };
 
-
-
-
 class Rotation{
 
 public:
