@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
+
 using namespace std;
 
 int getW(ifstream & , int);
@@ -88,5 +89,7 @@ private:
 
 Point2D getfov(double, double, Image);
 double getAvgAng(Point2D, Image);
+double getAng(Point2D,Point2D,double);
+double getStarAng(Point2D,Point2D,Point2D);
 
 #endif

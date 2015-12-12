@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
+
 using namespace std;
 
 //all take open ifstreams
@@ -735,4 +736,20 @@ double getAvgAng(Point2D angs, Image im){
 	double a = angs.x / im.w;
 	double b = angs.y / im.h;
 	return a;
+}
+
+double getAng(Point2D a, Point2D b, double app){
+	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
+}
+
+double getStarAng(Point2D a, Point2D b, Point2D c){
+	Point2D av, bv;
+	double 	IavI = 0, IbvI = 0;
+
+	av = Point2D(b.x-a.x, b.y-a.y);
+	bv = Point2D(c.x-a.x, c.y-a.y);
+	IavI = sqrt((av.x*av.x + av.y*av.y));
+	IbvI = sqrt((bv.x*bv.x + bv.y*bv.y));
+
+	return cos((av.x*bv.x+av.y*bv.y)/(IavI*IbvI));
 }

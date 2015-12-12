@@ -7,18 +7,21 @@ CPP_SRCS += \
 ../src/bildmanipulation.cpp \
 ../src/catalog.cpp \
 ../src/catalogmanipulation.cpp \
+../src/rotationsmatrix.cpp \
 ../src/sternsensor_Main.cpp 
 
 OBJS += \
 ./src/bildmanipulation.o \
 ./src/catalog.o \
 ./src/catalogmanipulation.o \
+./src/rotationsmatrix.o \
 ./src/sternsensor_Main.o 
 
 CPP_DEPS += \
 ./src/bildmanipulation.d \
 ./src/catalog.d \
 ./src/catalogmanipulation.d \
+./src/rotationsmatrix.d \
 ./src/sternsensor_Main.d 
 
 
