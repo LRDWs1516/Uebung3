@@ -17,6 +17,8 @@ int getH(ifstream & , int);
 int getStart(ifstream & );
 int getFilesize(ifstream &);
 void sleepcp(int);
+double getf(double, double, double);
+double getfov(double);
 
 class Point2D{
 public:
