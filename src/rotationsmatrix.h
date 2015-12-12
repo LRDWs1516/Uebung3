@@ -11,12 +11,17 @@ public:
 	double z;
 };
 
+
+
+
 class Rotation{
 
 public:
 	void getRotationmatrix(double* , double* );
 	vector<vector<double> >  rotor;
 	quaternion getQuaternion(double);
+	void printRotor();
+	void printQuat(quaternion q);
 private:
 	double* RotateX(double , double[3]);
 	double* RotateY(double , double[3]);

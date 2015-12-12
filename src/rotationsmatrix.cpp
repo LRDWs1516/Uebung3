@@ -1,6 +1,6 @@
 #include <math.h>
 #include "rotationsmatrix.h"
-
+#include <iostream>
 
 void Rotation::getRotationmatrix(double v[3] , double w[3] ){
 	double u[3] ={v[1]*w[2]-v[2]*w[1],v[2]*w[0]-v[0]*w[2],v[0]*w[1]-v[1]*w[0]};
@@ -43,5 +43,19 @@ double* normalize(double u[3]){
 	u[1]=u[1]/u_betrag;
 	u[2]=u[2]/u_betrag;
 	return u;
+}
+void Rotation::printRotor(){
+	//Schreibt die Rotationsmatrix aus Rotor aus. Muss davor berechnet werden
+	cout <<"Rotor: \n";
+	cout <<this->rotor.at(0).at(0)<<" "<<this->rotor.at(0).at(1)<<" "<<this->rotor.at(0).at(2)<<"\n";
+	cout <<this->rotor.at(1).at(0)<<" "<<this->rotor.at(1).at(1)<<" "<<this->rotor.at(1).at(2)<<"\n";
+	cout <<this->rotor.at(2).at(0)<<" "<<this->rotor.at(2).at(1)<<" "<<this->rotor.at(2).at(2)<<"\n";
+}
+void Rotation::printQuat(quaternion q){
+//Schreibt ein übergebenes Quaternionen raus	
+
+	cout<<"Quaternion:\n";
+	cout<<"Winkel: "<< q.deg<<"\n";
+	cout<<"Vektor: "<< q.x <<" "<<q.y<<" "<<q.z<<"\n";
 }
 
