@@ -21,12 +21,13 @@ int getFilesize(ifstream &);
 
 class Point2D{
 public:
-	double x;
-	double y;
 	Point2D();
 	Point2D(double, double);
 	double getDistance(Point2D);
 	void printVal();
+	double getAngleTo(Point2D, double);
+	double x;
+	double y;
 };
 
 Point2D::Point2D(){
@@ -662,6 +663,10 @@ vector<Point2D> PointArray::getCentralTriangle(Image & im){
     retVec.push_back(b);
     retVec.push_back(c);
 	return retVec;
+}
+
+double Point2D::getAngleTo(Point2D second, double app){
+	return (this->getDistance(second) * app);
 }
 
 //Get's image width from Windows BITMAPINFOHEADER

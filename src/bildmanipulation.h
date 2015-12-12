@@ -26,6 +26,7 @@ public:
 	Point2D(double, double);
 	double getDistance(Point2D);
 	void printVal();
+	double getAngleTo(Point2D, double);
 };
 
 class Color{
