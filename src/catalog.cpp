@@ -131,12 +131,10 @@ int getNumberofLines(ifstream & file){
     return lines;
 }
 
-void Catalog::printCatalog(){
+void Catalog::setTriangleCatalog(){
 	StarCatalogEntry *star=this->head_starlog->next;
 	TriangleCatalogEntry *t_before=this->head_trilog;
 	while (star!=NULL){
-		printf("index %d ", star->id);
-		printf("coord: %f, %f\n", star->azimut, star->elevation);
 		TriangleCatalogEntry t=searchTriangle(star);
 		t.setBefore(t_before);
 		t_before=&t;

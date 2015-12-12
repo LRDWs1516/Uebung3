@@ -41,7 +41,7 @@ int main() {
     cout << "Catalogmaking:" << endl;
 	Catalog c;
 	c.makeCatalog("catalog.txt");
-	//c.printCatalog();
+	c.setTriangleCatalog();
 	printf("id: %d\n", c.current->id);
 	printf("id: %d\n", c.head_starlog->id);
 

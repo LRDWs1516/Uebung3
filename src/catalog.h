@@ -38,6 +38,7 @@ class TriangleCatalogEntry{
 public:
 	TriangleCatalogEntry *before;
 	TriangleCatalogEntry *next;
+	TriangleCatalogEntry stars[3];
 	int id1;
 	int id2;
 	int id3;
@@ -62,7 +63,7 @@ public:
 	StarCatalogEntry *current;
 	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
 	void makeCatalog(const char * fname);
-	void printCatalog();
+	void setTriangleCatalog();
 	TriangleCatalogEntry searchTriangle(StarCatalogEntry* );
 	StarCatalogEntry& operator++(int);
 	StarCatalogEntry& operator--(int);
