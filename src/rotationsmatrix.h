@@ -1,5 +1,8 @@
 #include <vector>
 using namespace std;
+
+double* normalize(double[3]);
+
 class quaternion{
 public:	
 	double deg;
@@ -20,5 +23,5 @@ private:
 	double* RotateZ(double , double [3]);
 	double* rotate(double*, double[3]);
 	
-	quaternion getQuaternion(double ,double* , double* );
+	quaternion getQuaternion(double[3] , double[3] );
 };
