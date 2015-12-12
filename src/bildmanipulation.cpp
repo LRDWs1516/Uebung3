@@ -21,11 +21,13 @@ int getFilesize(ifstream &);
 
 class Point2D{
 public:
-	double x;
-	double y;
 	Point2D();
 	Point2D(double, double);
 	double getDistance(Point2D);
+	void printVal();
+	double getAngleTo(Point2D, double);
+	double x;
+	double y;
 };
 
 Point2D::Point2D(){
@@ -40,6 +42,10 @@ Point2D::Point2D(double x, double y){
 
 double Point2D::getDistance(Point2D second){
 	return sqrt((this->x-second.x)*(this->x-second.x) + (this->y-second.y)*(this->y-second.y));
+}
+
+void Point2D::printVal(){
+	cout << "x:" << this->x << " y:" << this->y;
 }
 
 class Color{
@@ -78,7 +84,7 @@ public:
 	void circleFit(vector<Point2D>);
 	void detectEdges(int, int);
 	void drawRectangle(Point2D, int, Color, int);
-	void drawCross(Point2D &, int, Color, int);
+	void drawCross(Point2D, int, Color, int);
 	void addImage(Image);
 	void getCameraParams();
 	void drawArrayToImage(vector<Point2D> &, Color);
@@ -100,7 +106,8 @@ public:
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
-	vector<Point2D> findClosest(Point2D);
+	int findClosest(Point2D, double);
+	vector<Point2D> getCentralTriangle(Image &);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
@@ -384,7 +391,7 @@ void Image::drawRectangle(Point2D position, int size, Color col, int type = 0){
 }
 
 //Basically draws two long Rectangles
-void Image::drawCross(Point2D & position, int size, Color col, int type = 0){
+void Image::drawCross(Point2D position, int size, Color col, int type = 0){
 	unsigned char * color = col.value;
 	for(int x = 0; x<h; x++){
 		for(int y = position.y-size; y<=position.y+size; y++){
@@ -620,14 +627,39 @@ Point2D PointArray::getCenterof(int i){
 	return this->centralPoints.at(i);
 }
 
-vector<Point2D> PointArray::findClosest(Point2D){
-	vector<Point2D> resultVec;
-
+int PointArray::findClosest(Point2D center, double thres){
+	int resultID = 0;
+	double minD1 = 900;
+	double minD2 = 900;
 	for(int i = 0; i<this->centralPoints.size(); i++){
-
+		double d = center.getDistance(this->centralPoints.at(i));
+		if(d < minD1 && d >= 1 && d > thres){
+			minD1 = d;
+			resultID = i;
+		}
 	}
+	return resultID;
+}
 
-	return resultVec;
+vector<Point2D> PointArray::getCentralTriangle(Image & im){
+	vector<Point2D> retVec;
+
+    int central = this->findClosest(Point2D(im.h/2, im.w/2),0);
+    int dist1 = this->findClosest(this->getCenterof(central),0);
+    Point2D a = this->centralPoints.at(central);
+    Point2D b = this->centralPoints.at(dist1);
+    double tr = sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
+    cout << "Dist: " << tr << endl;
+    int dist2 = this->findClosest(this->getCenterof(central),tr);
+    Point2D c = this->centralPoints.at(dist2);
+    retVec.push_back(a);
+    retVec.push_back(b);
+    retVec.push_back(c);
+	return retVec;
+}
+
+double Point2D::getAngleTo(Point2D second, double app){
+	return (this->getDistance(second) * app);
 }
 
 //Get's image width from Windows BITMAPINFOHEADER

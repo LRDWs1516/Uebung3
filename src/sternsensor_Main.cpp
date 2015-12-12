@@ -8,6 +8,22 @@
 #define FOCUS		25.0f	//in mm
 #define PIXELSIZE	5.8f	//in um
 
+double getAng(Point2D a, Point2D b, double app){
+	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
+}
+
+double getStarAng(Point2D a, Point2D b, Point2D c){
+	Point2D av, bv;
+	double 	IavI = 0, IbvI = 0;
+
+	av = Point2D(b.x-a.x, b.y-a.y);
+	bv = Point2D(c.x-a.x, c.y-a.y);
+	IavI = sqrt((av.x*av.x + av.y*av.y));
+	IbvI = sqrt((bv.x*bv.x + bv.y*bv.y));
+
+	return cos((av.x*bv.x+av.y*bv.y)/(IavI*IbvI));
+}
+
 int main() {
 
 	Color white(255,255,255);
@@ -21,7 +37,7 @@ int main() {
     first.readImageFromFile("Sterne.bmp", 1);
 
     second = first;
-    second.thresholdImage(140); 						//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
+    second.thresholdImage(90); 						//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
     second.writeImageToFile("sterne1.bmp"); 			// Zwischenergebnis
     first = second;
 
@@ -38,15 +54,25 @@ int main() {
 		second.drawArrayToImage(fst.allObjects.at(i), Color(50+i*20,100+i*10,200 + i*5));
     }
 
+	//Calculate IDs of most central Triangle of stars (central 0, triplet 0 and 1)
     second.writeImageToFile("sterne3.bmp"); //Bild speichern
-    for(int i = 0; i<fst.centralPoints.size(); i++){
-    	Point2D nowP(fst.getCenterof(i).x, fst.getCenterof(i).y);
-    	first.drawCross(nowP,0,Color(50+i*20,100+i*10,200 + i*5),0);
-    }
+
+    vector<Point2D> triplet;
+    triplet = fst.getCentralTriangle(first);
+
+    Point2D fov = getfov(FOCUS, PIXELSIZE, first);
+    double avg = getAvgAng(fov, first);
+    double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
+    double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
+    double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+
+    cout << "beta " << beta*180/M_PI*2 << endl;
+
+    first.drawCross((Point2D)triplet.at(0),0,green,0);
+    first.drawCross((Point2D)triplet.at(1),0,white,0);
+    first.drawCross((Point2D)triplet.at(2),0,red,0);
+
     first.writeImageToFile("sterne4.bmp");
-
-
-    cout << "Done!" << endl;
 
     cout << "Catalogmaking:" << endl;
 	Catalog c;
@@ -61,11 +87,6 @@ int main() {
 	while(c.current->before != NULL){
 		printf("id: %d\n",c--.id);
 	}*/
-
-	Point2D angs = getfov(FOCUS, PIXELSIZE, first);
-	double avgAngpPix = getAvgAng(angs, first);
-	cout << "FOV: " << angs.x*180/M_PI << " " << angs.y*180/M_PI << endl;
-	cout << "norm fov: " <<  avgAngpPix*first.w*180/M_PI << endl;
 
 	cout << "Done" << endl;
 

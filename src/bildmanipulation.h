@@ -25,6 +25,8 @@ public:
 	Point2D();
 	Point2D(double, double);
 	double getDistance(Point2D);
+	void printVal();
+	double getAngleTo(Point2D, double);
 };
 
 class Color{
@@ -52,7 +54,7 @@ public:
 	void circleFit(vector<Point2D>);
 	void detectEdges(int, int);
 	void drawRectangle(Point2D, int, Color, int);
-	void drawCross(Point2D &, int, Color, int);
+	void drawCross(Point2D, int, Color, int);
 	void addImage(Image);
 	void getCameraParams();
 	void drawArrayToImage(vector<Point2D> &, Color);
@@ -73,7 +75,8 @@ public:
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
-	vector<Point2D> findClosest(Point2D);
+	int findClosest(Point2D, double);
+	vector<Point2D> getCentralTriangle(Image &);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
