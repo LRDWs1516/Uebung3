@@ -12,10 +12,11 @@
 
 class Finder{
 public:
-	StarCatalogEntry getResult();
+	Finder();
+	TriangleCatalogEntry getMatch();
 private:
-
-	StarCatalogEntry result;
+	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
+	TriangleCatalogEntry match;
 };
 
 #endif /* DREIECKSBERECHNUNG_H_ */
