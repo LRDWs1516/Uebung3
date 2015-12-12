@@ -46,19 +46,20 @@ int main() {
 
 	//Calculate IDs of most central Triangle of stars (central 0, triplet 0 and 1)
     second.writeImageToFile("sterne3.bmp"); //Bild speichern
-    vector<int> central = fst.findClosest2(Point2D(first.h/2, first.w/2));
-    vector<int> triplet = fst.findClosest2(fst.getCenterof(central.at(0)));
-    double alp = fst.getAlpha(triplet.at(0), triplet.at(1), avgAngpPix);
-    cout << "alpha 3 " << alp*180/M_PI << endl;
 
-    first.drawCross((Point2D)fst.centralPoints.at(central.at(0)),0, pink,0);
-    first.drawCross((Point2D)fst.centralPoints.at(triplet.at(0)),0, green,0);
-    first.drawCross((Point2D)fst.centralPoints.at(triplet.at(1)),0, red,0);
+    vector<Point2D> triplet;
+    triplet = fst.getCentralTriangle(first);
 
-  /*  for(int i = 0; i<fst.centralPoints.size(); i++){
-    	Point2D nowP(fst.getCenterof(i).x, fst.getCenterof(i).y);
-    	first.drawCross(nowP,0,Color(50+i*20,100+i*10,200 + i*5),0);
-    }*/
+    cout << "trSize " << triplet.size() << endl;
+
+    for( int i = 0; i<triplet.size(); i++){
+    	triplet.at(i).printVal(); cout << endl;
+    }
+
+    first.drawCross((Point2D)triplet.at(0),0,green,0);
+    first.drawCross((Point2D)triplet.at(1),0,white,0);
+    first.drawCross((Point2D)triplet.at(2),0,red,0);
+
     first.writeImageToFile("sterne4.bmp");
 
 

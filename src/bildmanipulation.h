@@ -25,6 +25,7 @@ public:
 	Point2D();
 	Point2D(double, double);
 	double getDistance(Point2D);
+	void printVal();
 };
 
 class Color{
@@ -73,8 +74,9 @@ public:
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
-	vector<int> findClosest2(Point2D);
+	int findClosest(Point2D, double);
 	double getAlpha(int, int, double);
+	vector<Point2D> getCentralTriangle(Image &);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);

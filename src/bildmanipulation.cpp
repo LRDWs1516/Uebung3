@@ -26,6 +26,7 @@ public:
 	Point2D();
 	Point2D(double, double);
 	double getDistance(Point2D);
+	void printVal();
 };
 
 Point2D::Point2D(){
@@ -40,6 +41,10 @@ Point2D::Point2D(double x, double y){
 
 double Point2D::getDistance(Point2D second){
 	return sqrt((this->x-second.x)*(this->x-second.x) + (this->y-second.y)*(this->y-second.y));
+}
+
+void Point2D::printVal(){
+	cout << "x:" << this->x << " y:" << this->y;
 }
 
 class Color{
@@ -100,8 +105,9 @@ public:
 	vector<vector<Point2D> > allObjects;
 	vector<vector<bool> > overlay;
 	Point2D getCenterof(int);
-	vector<int> findClosest2(Point2D);
+	int findClosest(Point2D, double);
 	double getAlpha(int, int, double);
+	vector<Point2D> getCentralTriangle(Image &);
 private:
 	int vSize;
 	vector<Point2D> checkSurrounding(Point2D &, Image &);
@@ -621,35 +627,41 @@ Point2D PointArray::getCenterof(int i){
 	return this->centralPoints.at(i);
 }
 
-vector<int> PointArray::findClosest2(Point2D center){
-	vector<int> resultVec;
-	int res1, res2;
-	res1 = res2 = 0;
+int PointArray::findClosest(Point2D center, double thres){
+	int resultID = 0;
 	double minD1 = 900;
 	double minD2 = 900;
 	for(int i = 0; i<this->centralPoints.size(); i++){
 		double d = center.getDistance(this->centralPoints.at(i));
-		if(d < minD1 && d >= 1){
+		if(d < minD1 && d >= 1 && d > thres){
 			minD1 = d;
-			res1 = i;
+			resultID = i;
 		}
 	}
-	for(int i = 0; i<this->centralPoints.size(); i++){
-		double d = center.getDistance(this->centralPoints.at(i));
-		if(d > minD1 && d < minD2 && d >= 1){
-			minD2 = d;
-			res2 = i;
-		}
-	}
-	resultVec.push_back(res1);
-	resultVec.push_back(res2);
-	return resultVec;
+	return resultID;
 }
 
 double PointArray::getAlpha(int id1, int id2, double infAng){
 	double dist = this->centralPoints.at(id1).getDistance(this->centralPoints.at(id2));
 	dist *= infAng;
 	return dist;
+}
+
+vector<Point2D> PointArray::getCentralTriangle(Image & im){
+	vector<Point2D> retVec;
+
+    int central = this->findClosest(Point2D(im.h/2, im.w/2),0);
+    int dist1 = this->findClosest(this->getCenterof(central),0);
+    Point2D a = this->centralPoints.at(central);
+    Point2D b = this->centralPoints.at(dist1);
+    double tr = sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
+    cout << "Dist: " << tr << endl;
+    int dist2 = this->findClosest(this->getCenterof(central),tr);
+    Point2D c = this->centralPoints.at(dist2);
+    retVec.push_back(a);
+    retVec.push_back(b);
+    retVec.push_back(c);
+	return retVec;
 }
 
 //Get's image width from Windows BITMAPINFOHEADER
