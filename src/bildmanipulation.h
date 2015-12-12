@@ -80,7 +80,6 @@ private:
 	bool isOutline(Point2D &, Image &);
 };
 
-double getf(double, double, double);
 double getfov(double, double, Image);
 
 #endif
