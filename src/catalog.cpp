@@ -42,18 +42,35 @@ StarCatalogEntry* StarCatalogEntry::getNext(){
 TriangleCatalogEntry::TriangleCatalogEntry(){
 	this->before=NULL;
 	this->next=NULL;
+	for(int i=0; i<3; i++){
+		this->stars[i] = NULL;
+	}
 }
 
 //Eintrag für ein Dreieck, immer das kleinste
 TriangleCatalogEntry::TriangleCatalogEntry(int id1, int id2, int id3, double beta, double alpha1, double alpha2){
-	this-> id1=id1;
+	this -> id1=id1;
 	this -> id2=id2;
 	this -> id3=id3;
 	this -> beta=beta; //Winkel im Dreieck, alpah1+alpha2 sei minimal, 180-alpha1-alpha2=beta
 	this -> alpha1=alpha1;
 	this -> alpha2=alpha2;
-	this->before=NULL;
-	this->next=NULL;
+	this -> before=NULL;
+	this -> next=NULL;
+	for(int i=0; i<3; i++){
+		this->stars[i] = NULL;
+	}
+}
+
+
+void TriangleCatalogEntry::setStars(StarCatalogEntry *stars[3]){
+	this -> stars[0] = stars[0];
+	this -> stars[1] = stars[1];
+	this -> stars[2] = stars[2];
+}
+
+StarCatalogEntry ** TriangleCatalogEntry::getStars(void){
+	return this->stars;
 }
 
 void TriangleCatalogEntry::setBefore(TriangleCatalogEntry* before){
@@ -98,9 +115,17 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 		}	
 		star=star->next;
 	}
-	
+
 	double beta= fmod(180.0-fabs(alpha1+alpha2), 360.0);
-	TriangleCatalogEntry t= TriangleCatalogEntry(self->id, star1->id, star2->id,beta, alpha1, alpha2);
+	TriangleCatalogEntry t = TriangleCatalogEntry(self->id, star1->id, star2->id,beta, alpha1, alpha2);
+
+	//speichert die drei Sterne im Dreieck in ein Array und fügt sie dem TriangleCatalogEntry hinzu
+	StarCatalogEntry* stars[3];
+	stars[0] = self;
+	stars[1] = star1;
+	stars[2] = star2;
+	t.setStars(stars);
+
 	//printf("self %d id2 %d id3 %d beta %f alpha1 %f alpha2 %f \n", t.id1, t.id2,t.id3,t.beta,t.alpha1,t.alpha2);
 	return t;
 }

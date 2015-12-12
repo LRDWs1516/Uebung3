@@ -38,7 +38,7 @@ class TriangleCatalogEntry{
 public:
 	TriangleCatalogEntry * before;
 	TriangleCatalogEntry * next;
-	TriangleCatalogEntry * stars[3];
+	StarCatalogEntry * stars[3];		//speichert Zeiger auf die drei Sterne im Katalog, die das Dreieck bilden
 	int id1;
 	int id2;
 	int id3;
@@ -46,9 +46,11 @@ public:
 	double alpha1;
 	double alpha2;
 
-
 	TriangleCatalogEntry(int , int , int , double , double , double );
 	TriangleCatalogEntry();
+
+	void setStars(StarCatalogEntry* stars[3]);
+	StarCatalogEntry **getStars(void);
 
 	void setBefore(TriangleCatalogEntry*);
 	void setNext(TriangleCatalogEntry*);
