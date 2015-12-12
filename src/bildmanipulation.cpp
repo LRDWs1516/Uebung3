@@ -686,7 +686,9 @@ double getf(double d, double L, double R){
 
 }
 
-double getfov(double f){
- 	double a_v=2.0*atan((1024*5.6*0.000001)/(2.0*f));
+double * getfov(double f, double px, Image im){
+	double a_v[2]; a_v[0] = 0; a_v[1] = 0;
+ 	a_v[0]=2.0*atan((im.w*px*0.000001)/(2.0*f));
+ 	a_v[1]=2.0*atan((im.h*px*0.000001)/(2.0*f));
 	return a_v;
 }

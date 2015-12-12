@@ -5,6 +5,9 @@
 #include "bildmanipulation.h"
 #include "catalogmanipulation.h"
 
+#define FOCUS		25.0f	//in mm
+#define PIXELSIZE	5.8f	//in um
+
 int main() {
 
 	Color white(255,255,255);
@@ -53,6 +56,8 @@ int main() {
 	while(c.current->before != NULL){
 		printf("id: %d\n",c--.id);
 	}
+
+	double f = getfov(FOCUS, PIXELSIZE, first);
 
 	cout << c.size() << endl;
 
