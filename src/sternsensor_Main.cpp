@@ -8,6 +8,22 @@
 #define FOCUS		25.0f	//in mm
 #define PIXELSIZE	5.8f	//in um
 
+double getAng(Point2D a, Point2D b, double app){
+	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
+}
+
+double getStarAng(Point2D a, Point2D b, Point2D c){
+	Point2D av, bv;
+	double 	IavI = 0, IbvI = 0;
+
+	av = Point2D(b.x-a.x, b.y-a.y);
+	bv = Point2D(c.x-a.x, c.y-a.y);
+	IavI = sqrt((av.x*av.x + av.y*av.y));
+	IbvI = sqrt((bv.x*bv.x + bv.y*bv.y));
+
+	return cos((av.x*bv.x+av.y*bv.y)/(IavI*IbvI));
+}
+
 int main() {
 
 	Color white(255,255,255);
@@ -46,6 +62,11 @@ int main() {
 
     Point2D fov = getfov(FOCUS, PIXELSIZE, first);
     double avg = getAvgAng(fov, first);
+    double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
+    double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
+    double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+
+    cout << "beta " << beta*180/M_PI*2 << endl;
 
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
@@ -53,7 +74,7 @@ int main() {
 
     first.writeImageToFile("sterne4.bmp");
 
-    cout << "Catalogmaking:" << endl << endl;
+    cout << "Catalogmaking:" << endl;
 	Catalog c;
 	c.makeCatalog("catalog.txt");
 	c.setTriangleCatalog();
