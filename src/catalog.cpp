@@ -158,10 +158,13 @@ int getNumberofLines(ifstream & file){
 
 void Catalog::setTriangleCatalog(){
 	StarCatalogEntry *star=this->head_starlog->next;
+	cout<< "Starlog head: "<<this->head_starlog->next <<endl;
 	TriangleCatalogEntry *t_before=this->head_trilog;
 	while (star!=NULL){
 		TriangleCatalogEntry t=searchTriangle(star);
 		t.setBefore(t_before);
+		t_before->next=&t;
+		cout << "trilog next" << t_before->next->id1 <<endl;
 		t_before=&t;
 		star=star->next;
 	}
