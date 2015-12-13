@@ -41,7 +41,7 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 		sort(tri_vector.begin(), tri_vector.end(), comparator);
 		sort(deg_vector.begin(), deg_vector.end(), comparator);
 	
-		if(deg_vector==tri_vector){
+		if(approx(deg_vector[0], tri_vector[0])&& approx(deg_vector[1], tri_vector[1])&&approx(deg_vector[2], tri_vector[2])){
 			return tri;
 		}
 		tri=tri->next;
@@ -51,7 +51,12 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 	return empty;
 
 }
-
+bool approx(double a, double b){
+	if(a+0.1>b && a-0.1<b){
+		return true;
+	}
+	return false;
+}
 
 
 

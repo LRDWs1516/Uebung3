@@ -60,6 +60,8 @@ public:
 
 class Catalog{
 public:
+
+	TriangleCatalogEntry* getHeadTrilog();
 	int cSize;
 	StarCatalogEntry *head_starlog = new StarCatalogEntry();
 	StarCatalogEntry *current;
