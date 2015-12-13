@@ -107,8 +107,6 @@ int main() {
 
 	cout << "done" << endl;
 
-	Finder f(c.head_trilog);
-
 	//TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 
 	//cout << match->alpha1 << endl;

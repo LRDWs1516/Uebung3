@@ -19,6 +19,17 @@ private:
 	double declination;
 };
 
+class TriangleEntry{
+public:
+	TriangleEntry(int, int, int, double[3], double[3]);
+private:
+	int id1;
+	int id2;
+	int id3;
+	double alpha[3];
+	double beta[3];
+};
+
 class StarCatalog{
 public:
 	void translateCatalog(Catalog c);
@@ -28,9 +39,9 @@ private:
 
 class TriangleCatalog{
 public:
-	
+	void createCatalog(StarCatalog c);
 private:
-	
+	vector<TriangleEntry> mainCatalog;
 };
 
 #endif
