@@ -10,6 +10,34 @@
 
 using namespace std;
 
+Triangle::Triangle(vector<Point2D> corners){
+	if(corners.size() != 3){
+		cerr << "WRONG VECTOR SIZE" << endl;
+		throw corners;
+	}
+	A = corners.at(0);
+	B = corners.at(1);
+	C = corners.at(2);
+	alphas[0] = 0;
+	alphas[1] = 0;
+	alphas[2] = 0;
+}
+void Triangle::setCorners(vector<Point2D> corners){
+	A = corners.at(0);
+	B = corners.at(1);
+	C = corners.at(2);
+}
+
+void Triangle::calculateAlphas(double avg){
+	alphas[0] = this->A.getDistance(this->B);
+	alphas[1] = this->A.getDistance(this->C);
+	alphas[2] = this->B.getDistance(this->C);
+	alphas[0] *= avg;
+	alphas[1] *= avg;
+	alphas[2] *= avg;
+	
+}
+
 vector<Point2D> PointArray::checkSurrounding(Point2D & current, Image & input){
 	int w = input.w;
 	int h = input.h;

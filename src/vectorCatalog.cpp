@@ -1,4 +1,4 @@
- 
+
  #include "vectorCatalog.h"
  
  RID3::RID3(int id[3]){
@@ -79,14 +79,26 @@ double Vector3D::angleTo(Vector3D second){
 				+(this->z-second.getE(2))*(this->z-second.getE(2)));
  }
  
- TriangleEntry::TriangleEntry(int rID[3], double alpha[3]){
-	 this->alpha[0] = alpha[0];
-	 this->alpha[1] = alpha[1];
-	 this->alpha[2] = alpha[2];
-	 this->rID[0] = rID[0];
-	 this->rID[1] = rID[1];
-	 this->rID[2] = rID[2];
+ TriangleEntry::TriangleEntry(RID3 rID, Vector3D alpha){
+	 this->alpha[0] = alpha.c[0];
+	 this->alpha[1] = alpha.c[1];
+	 this->alpha[2] = alpha.c[2];
+	 this->rID[0] = rID.rID[0];
+	 this->rID[1] = rID.rID[1];
+	 this->rID[2] = rID.rID[2];
  }
+ 
+ bool TriangleEntry::compareTo(Triangle central, double threshold){
+		double comp1[3] = {central.alphas[0], central.alphas[1], central.alphas[2]};
+		double comp2[3] = {this->alpha[0], this->alpha[1], this->alpha[2]};
+		if(fabs(comp1[0]-comp2[0]) + fabs(comp1[1]-comp2[1]) + fabs(comp1[2]-comp2[2]) < threshold){
+			
+		}
+}
+
+double TriangleEntry::getalpha(int i){
+	return this->alpha[i];
+}
  
   vector<StarEntry> StarCatalog::getMainCatalog(){
 	return this->mainCatalog;
@@ -144,8 +156,6 @@ double Vector3D::angleTo(Vector3D second){
 	 r.c[1] = starVecs[1].angleTo(starVecs[2]);
 	 r.c[2] = starVecs[2].angleTo(starVecs[0]);
 	 
-	 cout << r.c[0] << " " << r.c[1] << " " << r.c[0] << endl;
-	 
 	 return r;
  }
  
@@ -156,5 +166,14 @@ double Vector3D::angleTo(Vector3D second){
 		 RID3 curr = c.findClosest2(i);
 		 curr.rID[0] = i;
 		 Vector3D alphas = c.triangleGetAlpha(curr);
+		 TriangleEntry additional(curr, alphas);
+		 this->mainCatalog.push_back(additional);
+		 cout << additional.getalpha(0) << " " << additional.getalpha(1) << " " << additional.getalpha(2) << endl;
 	}
+ }
+ 
+ bool TriangleCatalog::containsTriangle(Triangle t){
+	for(int i = 0; i<this->mainCatalog.size(); i++){
+		
+	} 
  }

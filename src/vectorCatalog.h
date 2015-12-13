@@ -5,6 +5,8 @@
 #include <iostream>
 #include <math.h>
 #include "catalog.h"
+#include "PointArray.h"
+#include "vectorCatalog.h"
 
 struct RID3{
 	int rID[3] = {-1,-1,-1};
@@ -40,7 +42,9 @@ private:
 
 class TriangleEntry{
 public:
-	TriangleEntry(int[3], double[3]);
+	TriangleEntry(RID3, Vector3D);
+	bool compareTo(Triangle, double);
+	double getalpha(int);
 private:
 	int rID[3];
 	double alpha[3];
@@ -59,6 +63,7 @@ private:
 class TriangleCatalog{
 public:
 	void createCatalog(StarCatalog, double);
+	bool containsTriangle(Triangle);
 private:
 	vector<TriangleEntry> mainCatalog;
 };

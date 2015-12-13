@@ -27,6 +27,7 @@ Point2D getfov(double f, double px, Image im){
 	return returnP;
 }
 
+//rad/Pixel
 double getAvgAng(Point2D angs, Image im){
 	double a = angs.x / im.w;
 	double b = angs.y / im.h;
@@ -61,6 +62,8 @@ int main() {
     Image first, second;
     PointArray fst;
     first.readImageFromFile("Sterne.bmp", 1);
+    Point2D fov = getfov(FOCUS, PIXELSIZE, first);
+    double avg = getAvgAng(fov, first); //avg rad/pixel
 
     second = first;
     second.thresholdImage(0); 							//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
@@ -85,15 +88,16 @@ int main() {
 
     vector<Point2D> triplet;
     triplet = fst.getCentralTriangle(first);
+    Triangle central(triplet);
+    central.calculateAlphas(avg);
+    
+    cout << "ALPHA 1: " << central.alphas[0] << endl;
+    cout << "ALPHA 2: " << central.alphas[1] << endl;
+    cout << "ALPHA 3: " << central.alphas[2] << endl;
 
-    Point2D fov = getfov(FOCUS, PIXELSIZE, first);
-    double avg = getAvgAng(fov, first);
     double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
-	//double beta= fmod(M_PI-fabs(alpha1+alpha2), M_PI);
 	double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-
-    cout << "beta " << beta*180/M_PI << endl;
 
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
@@ -112,8 +116,12 @@ int main() {
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 
 	//cout << match->alpha1 << endl;
-	//StarCatalog cat;
-	//cat.translateCatalog(c);
+	StarCatalog cat;
+	cat.translateCatalog(c);
+	TriangleCatalog tcat;
+	tcat.createCatalog(cat, avg);
+	cout << "-----" << endl;
+	tcat.containsTriangle(central);
 /*
 	//Simple Iteratorversuche
 	while(c.current->next != NULL){
