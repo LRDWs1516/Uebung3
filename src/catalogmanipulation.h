@@ -7,7 +7,8 @@
 
 #ifndef CATALOGMANIPULATION_H_
 #define CATALOGMANIPULATION_H_
-#include "bildmanipulation.h"
+#include "Image.h"
+#include "PointArray.h"
 #include "catalog.h"
 
 bool comparator(double, double);

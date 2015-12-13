@@ -2,12 +2,52 @@
 //This Program has a problem: X is vertical, Y is horizontal
 
 #include "catalog.h"
-#include "bildmanipulation.h"
+//#include "bildmanipulation.h"
+#include "PointArray.h"
 #include "catalogmanipulation.h"
 #include "rotationsmatrix.h"
 
 #define FOCUS		25.0f	//in mm
 #define PIXELSIZE	5.8f	//in um
+
+void sleepcp(int milliseconds) // cross-platform sleep function
+{
+    clock_t time_end;
+    time_end = clock() + milliseconds * CLOCKS_PER_SEC/1000;
+    while (clock() < time_end)
+    {
+    }
+}
+
+Point2D getfov(double f, double px, Image im){
+	double a_v[2]; a_v[0] = 0; a_v[1] = 0;
+ 	a_v[0]=2.0*atan((im.w*px*0.000001)/(2.0*f/1000.0));
+ 	a_v[1]=2.0*atan((im.h*px*0.000001)/(2.0*f/1000.0));
+	Point2D returnP(a_v[0], a_v[1]);
+	return returnP;
+}
+
+double getAvgAng(Point2D angs, Image im){
+	double a = angs.x / im.w;
+	double b = angs.y / im.h;
+	return a;
+}
+
+double getAng(Point2D a, Point2D b, double app){
+	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
+}
+
+double getStarAng(Point2D a, Point2D b, Point2D c){
+	Point2D av, bv;
+	double 	IavI = 0, IbvI = 0;
+
+	av = Point2D(b.x-a.x, b.y-a.y);
+	bv = Point2D(c.x-a.x, c.y-a.y);
+	IavI = sqrt((av.x*av.x + av.y*av.y));
+	IbvI = sqrt((bv.x*bv.x + bv.y*bv.y));
+
+	return cos((av.x*bv.x+av.y*bv.y)/(IavI*IbvI));
+}
 
 int main() {
 

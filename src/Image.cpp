@@ -1,122 +1,11 @@
-//Uebung 2 LRD Beispiel
-//This Program has a problem: X is vertical, Y is horizontal
+/*
+ * Image.cpp
+ *
+ *  Created on: Dec 13, 2015
+ *      Author: david
+ */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <math.h>
-#include <stdlib.h>
-#include <cstdlib>
-#include <time.h>
-
-using namespace std;
-
-//all take open ifstreams
-//doesn't hurt atm
-int getW(ifstream & , int);
-int getH(ifstream & , int);
-int getStart(ifstream & );
-int getFilesize(ifstream &);
-
-class Point2D{
-public:
-	Point2D();
-	Point2D(double, double);
-	double getDistance(Point2D);
-	void printVal();
-	double getAngleTo(Point2D, double);
-	double x;
-	double y;
-};
-
-Point2D::Point2D(){
-	this->x = 0;
-	this->y = 0;
-}
-
-Point2D::Point2D(double x, double y){
-	this->x = x;
-	this->y = y;
-}
-
-double Point2D::getDistance(Point2D second){
-	return sqrt((this->x-second.x)*(this->x-second.x) + (this->y-second.y)*(this->y-second.y));
-}
-
-void Point2D::printVal(){
-	cout << "x:" << this->x << " y:" << this->y;
-}
-
-class Color{
-public:
-	unsigned char value[3];
-	Color(int, int, int);
-	int absolute();
-};
-
-Color::Color(int a, int b, int c){
-	value[0] = a;
-    value[1] = b;
-	value[2] = c;
-}
-
-int Color::absolute(){
-	return (int)(value[0]+value[1]+value[2]);
-}
-
-//basically implements all functionality
-class Image{
-public:
-	Image();
-	vector<vector<Color> > Matrix;
-	vector<vector<Color> > temporaryMat;
-	vector<Point2D> fitArray;
-	Point2D centerPoint;
-	uint32_t w,h,start,filesize;
-	char * overhead;
-	bool readImageFromFile(const char *, int);
-	bool readImageFromFile2(const char *, int);
-	bool writeImageToFile(const char *);
-	void thresholdImage(uint8_t thres);
-	Point2D calcCenterOfMass();
-	void getPointArray();
-	void circleFit(vector<Point2D>);
-	void detectEdges(int, int);
-	void drawRectangle(Point2D, int, Color, int);
-	void drawCross(Point2D, int, Color, int);
-	void addImage(Image);
-	void getCameraParams();
-	void drawArrayToImage(vector<Point2D> &, Color);
-	void drawBinarysToImage(vector<vector<bool> > &, Color);
-	void copyTo(Image &, int);
-private:
-};
-
-//Class used to flood edges and determine connected Points in an image
-class PointArray{
-public:
-	void fill(Image &, int);
-	void fill2(Image &, int);
-	void getCentrals();
-	vector<Point2D> getAllPoints();
-	vector<Point2D> allPoints;
-	vector<Point2D> startPoints;
-	vector<Point2D> centralPoints;
-	vector<vector<Point2D> > allObjects;
-	vector<vector<bool> > overlay;
-	Point2D getCenterof(int);
-	int findClosest(Point2D, double);
-	vector<Point2D> getCentralTriangle(Image &);
-private:
-	int vSize;
-	vector<Point2D> checkSurrounding(Point2D &, Image &);
-	vector<Point2D> followOutline(Point2D &, Image &);
-	vector<Point2D> calcOverlay(Point2D &, Image &, int);
-	Point2D getCenter(vector<Point2D>);
-	bool isOutline(Point2D &, Image &);
-};
+#include "Image.h"
 
 //standard Constructor
 Image::Image(){
@@ -466,205 +355,8 @@ void Image::drawBinarysToImage(vector<vector<bool> > & binIm, Color col){
 	}
 }
 
-vector<Point2D> PointArray::checkSurrounding(Point2D & current, Image & input){
-	int w = input.w;
-	int h = input.h;
-    vector<Point2D> output;
-	vector<Point2D> checkpoints;
-	if(current.x-1 	> 0 	&& current.y 	> 0){	checkpoints.push_back(Point2D(current.x-1, current.y));}
-	if(current.x-1 	> 0 	&& current.y+1 	< w-1){	checkpoints.push_back(Point2D(current.x-1, current.y+1));}
-    if(current.x 	> 0 	&& current.y+1 	< w-1){	checkpoints.push_back(Point2D(current.x, current.y+1));}
-    if(current.x+1 	< h-1 	&& current.y+1 	< w-1){	checkpoints.push_back(Point2D(current.x+1, current.y+1));}
-    if(current.x+1 	< h-1 	&& current.y 	< w-1){	checkpoints.push_back(Point2D(current.x+1, current.y));}
-    if(current.x+1 	< h-1 	&& current.y-1 	> 0){	checkpoints.push_back(Point2D(current.x+1, current.y-1));}
-    if(current.x 	< h-1 	&& current.y-1 	> 0){	checkpoints.push_back(Point2D(current.x, current.y-1));}
-    if(current.x-1 	> 0 	&& current.y-1 	> 0){	checkpoints.push_back(Point2D(current.x-1, current.y-1));}
-
-		for(int i = 0; i<checkpoints.size(); i++){
-			if(isOutline(checkpoints.at(i), input) && !overlay.at(checkpoints.at(i).x).at(checkpoints.at(i).y))
-			{
-				output.push_back(checkpoints.at(i));
-				overlay.at(checkpoints.at(i).x).at(checkpoints.at(i).y) = true;
-			}
-		}
-		checkpoints.clear();
-	return output;
-}
-
-vector<Point2D> PointArray::followOutline(Point2D & current, Image & input){
-	int w = input.w;
-	int h = input.h;
-    vector<Point2D> output;
-    bool isBorder = false;
-    for(int mx = -1; mx < 2; mx++){
-    	for(int my = -1; my < 2; my++){
-    		Point2D checkpoint(current.x+mx, current.y+my);
-    		if(current.x+mx >= 0 && current.x+mx < h && current.y+my >= 0 && current.y+my < w){
-				if(isOutline(checkpoint, input) && !overlay.at(checkpoint.x).at(checkpoint.y))
-				{
-					output.push_back(checkpoint);
-				}
-				else if(!isOutline(checkpoint, input)){
-					isBorder = true;
-				}
-    		}
-    		else isBorder = true;
-    	}
-    }
-	if(isBorder){
-		for(int i = 0; i<output.size(); i++) {
-			overlay.at(output.at(i).x).at(output.at(i).y) = true;
-		}
-	}
-	else output.clear();
-
-	return output;
-}
-
-vector<Point2D> PointArray::calcOverlay(Point2D & startpoint, Image & input, int type){
-	//cout << "called" << endl;
-	vector<Point2D> currentObject;
-	try{
-		if(type != 1 && type != 2) throw type;
-		allPoints.push_back(startpoint);
-		startPoints.push_back(startpoint);
-		currentObject.push_back(startpoint);
-		overlay.at(startpoint.x).at(startpoint.y) = true;
-		input.Matrix.at(startpoint.x).at(startpoint.y) = Color(0,255,0);
-		vector<Point2D> stage;
-		vector<Point2D> last_stage;
-		last_stage.push_back(startpoint);
-		while(!last_stage.empty()){
-			for(int j = 0; j < last_stage.size(); j++){
-				vector<Point2D> append;
-				if(type == 1)append = checkSurrounding(last_stage.at(j), input);
-				else if(type == 2) append = followOutline(last_stage.at(j), input);
-				stage.insert(stage.end(), append.begin(), append.end());
-			}
-			last_stage.clear();
-			if(!stage.empty()){
-				last_stage.insert(last_stage.end(), stage.begin(), stage.end());
-				currentObject.insert(currentObject.end(), stage.begin(), stage.end());
-			}
-			stage.clear();
-		}
-	}catch (int e){
-		cout << "Error: " << e << " is not an Overlay Type" << endl;
-	}
-	allPoints.insert(allPoints.end(), currentObject.begin(), currentObject.end());
-	return currentObject;
-}
-
-bool PointArray::isOutline(Point2D & p, Image & input){
-	if(input.Matrix.at(p.x).at(p.y).value[0] != 0 || input.Matrix.at(p.x).at(p.y).value[1] != 0 || input.Matrix.at(p.x).at(p.y).value[2] != 0) return true;
-	return false;
-}
-
-vector<Point2D> PointArray::getAllPoints(){
-	return allPoints;
-}
-
-/*
- * takes type 1 and type 2
- * 1: full, 2: outline
-*/
-void PointArray::fill(Image & input, int type)
-{
-	vSize = 0;
-	vector<vector<bool> > temp(input.h, vector<bool>(input.w, false));
-	overlay = temp;
-	temp.clear();
-	bool done = false;
-	for(int x = 0; x<input.h; x++){
-		for(int y= 0; y<input.w; y++){
-			if(input.Matrix.at(x).at(y).value[0] != 0 && !done && !overlay.at(x).at(y)){
-				Point2D startPoint(x,y);
-				allObjects.push_back(calcOverlay(startPoint, input, type));
-				done = true;
-			}
-			if(done){
-				break;
-			}
-		}
-		if(done){
-			break;
-		}
-	}
-}
-
-void PointArray::fill2(Image & input, int type)
-{
-	vSize = 0;
-	vector<vector<bool> > temp(input.h, vector<bool>(input.w, false));
-	overlay = temp;
-	temp.clear();
-	for(int x = 0; x<input.h; x++){
-		for(int y= 0; y<input.w; y++){
-			if(input.Matrix.at(x).at(y).value[0] != 0 && !overlay.at(x).at(y)){
-				Point2D startPoint(x,y);
-				allObjects.push_back(calcOverlay(startPoint, input, type));
-			}
-		}
-	}
-}
-
-Point2D PointArray::getCenter(vector<Point2D> object){
-	Point2D center;
-	int obsize = object.size();
-	for(int i = 0; i<obsize; i++){
-		center.x += object.at(i).x/((double)(obsize));
-		center.y += object.at(i).y/((double)(obsize));
-	}
-	return center;
-}
-
-void PointArray::getCentrals(){
-	for(int i = 0; i<this->allObjects.size(); i++){
-		this->centralPoints.push_back(getCenter(allObjects.at(i)));
-	}
-}
-
-Point2D PointArray::getCenterof(int i){
-	return this->centralPoints.at(i);
-}
-
-int PointArray::findClosest(Point2D center, double thres){
-	int resultID = 0;
-	double minD1 = 900;
-	double minD2 = 900;
-	for(int i = 0; i<this->centralPoints.size(); i++){
-		double d = center.getDistance(this->centralPoints.at(i));
-		if(d < minD1 && d >= 1 && d > thres){
-			minD1 = d;
-			resultID = i;
-		}
-	}
-	return resultID;
-}
-
-vector<Point2D> PointArray::getCentralTriangle(Image & im){
-	vector<Point2D> retVec;
-
-    int central = this->findClosest(Point2D(im.h/2, im.w/2),0);
-    int dist1 = this->findClosest(this->getCenterof(central),0);
-    Point2D a = this->centralPoints.at(central);
-    Point2D b = this->centralPoints.at(dist1);
-    double tr = sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
-    cout << "Dist: " << tr << endl;
-    int dist2 = this->findClosest(this->getCenterof(central),tr);
-    Point2D c = this->centralPoints.at(dist2);
-    retVec.push_back(a);
-    retVec.push_back(b);
-    retVec.push_back(c);
-	return retVec;
-}
-
-double Point2D::getAngleTo(Point2D second, double app){
-	return (this->getDistance(second) * app);
-}
-
 //Get's image width from Windows BITMAPINFOHEADER
-int getW(ifstream & stream, int type){
+int Image::getW(ifstream & stream, int type){
 	stream.seekg(17);
 	if(type != 0)	stream.seekg(18);
     unsigned int w = stream.get();
@@ -683,7 +375,7 @@ int getW(ifstream & stream, int type){
 }
 
 //Get's image heigth from Windows BITMAPINFOHEADER
-int getH(ifstream & stream, int type){
+int Image::getH(ifstream & stream, int type){
 	stream.seekg(21);
 	if(type != 0)	stream.seekg(22);
 	unsigned int h = stream.get();
@@ -702,54 +394,18 @@ int getH(ifstream & stream, int type){
 }
 
 //Get's start of pixeldata from Windows BITMAPINFOHEADER
-int getStart(ifstream & stream){
+int Image::getStart(ifstream & stream){
 	stream.seekg(10);
     uint32_t start = stream.get();
     return start;
 }
 
 //calculates size of pixeldata (could be faulty)
-int getFilesize(ifstream & stream){
+int Image::getFilesize(ifstream & stream){
 	stream.seekg(0,stream.end);
     uint32_t filesize=stream.tellg();
     return filesize;
 }
 
-void sleepcp(int milliseconds) // cross-platform sleep function
-{
-    clock_t time_end;
-    time_end = clock() + milliseconds * CLOCKS_PER_SEC/1000;
-    while (clock() < time_end)
-    {
-    }
-}
 
-Point2D getfov(double f, double px, Image im){
-	double a_v[2]; a_v[0] = 0; a_v[1] = 0;
- 	a_v[0]=2.0*atan((im.w*px*0.000001)/(2.0*f/1000.0));
- 	a_v[1]=2.0*atan((im.h*px*0.000001)/(2.0*f/1000.0));
-	Point2D returnP(a_v[0], a_v[1]);
-	return returnP;
-}
 
-double getAvgAng(Point2D angs, Image im){
-	double a = angs.x / im.w;
-	double b = angs.y / im.h;
-	return a;
-}
-
-double getAng(Point2D a, Point2D b, double app){
-	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
-}
-
-double getStarAng(Point2D a, Point2D b, Point2D c){
-	Point2D av, bv;
-	double 	IavI = 0, IbvI = 0;
-
-	av = Point2D(b.x-a.x, b.y-a.y);
-	bv = Point2D(c.x-a.x, c.y-a.y);
-	IavI = sqrt((av.x*av.x + av.y*av.y));
-	IbvI = sqrt((bv.x*bv.x + bv.y*bv.y));
-
-	return cos((av.x*bv.x+av.y*bv.y)/(IavI*IbvI));
-}
