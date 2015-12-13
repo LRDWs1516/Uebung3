@@ -28,16 +28,14 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 	deg_vector[1]=deg2;
 	deg_vector[2]=deg3;
 
-	TriangleCatalogEntry *tri=this->head_trilog->next;
+	TriangleCatalogEntry * tri=this->head_trilog->next;
 	
 	while(tri!=NULL){
 		//Initialisiert die Iteratoren
 		vector<double> tri_vector(3);
 		tri_vector[0]=tri->alpha1;
-		tri_vector[0]=tri->alpha2;
-		tri_vector[0]=tri->beta;
-	
-
+		tri_vector[1]=tri->alpha2;
+		tri_vector[2]=tri->beta;
 
 		//Sortiert Vektoren
 		sort(tri_vector.begin(), tri_vector.end(), comparator);
@@ -48,7 +46,9 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 		}
 		tri=tri->next;
 	}
-	return NULL;
+	TriangleCatalogEntry * empty;
+
+	return empty;
 
 }
 

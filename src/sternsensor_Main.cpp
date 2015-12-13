@@ -64,6 +64,21 @@ int main() {
 	c.makeCatalog("catalog.txt");
 	c.setTriangleCatalog();
 
+	cout << "done" << endl;
+
+	if(c.head_trilog->before == NULL){
+		cout << "ENDING" << endl;
+		terminate();
+	}
+
+	Finder f(c.head_trilog);
+
+	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
+
+	cout << "found?" << endl;
+
+	cout << match->alpha1 << endl;
+
 	//Simple Iteratorversuche
 	/*while(c.current->next != NULL){
 		printf("id: %d\n",c++.id);
