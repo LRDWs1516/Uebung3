@@ -172,6 +172,7 @@ Point2D PointArray::getCenterof(int i){
 	return this->centralPoints.at(i);
 }
 
+//finds Star (id) closest to threshold
 int PointArray::findClosest(Point2D center, double thres){
 	int resultID = 0;
 	double minD1 = 900;
@@ -186,6 +187,7 @@ int PointArray::findClosest(Point2D center, double thres){
 	return resultID;
 }
 
+//calculates the three central points
 vector<Point2D> PointArray::getCentralTriangle(Image & im){
 	vector<Point2D> retVec;
 
