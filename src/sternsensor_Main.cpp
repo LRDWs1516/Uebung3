@@ -6,6 +6,7 @@
 #include "PointArray.h"
 #include "catalogmanipulation.h"
 #include "rotationsmatrix.h"
+#include "vectorCatalog.h"
 
 #define FOCUS		25.0f	//in mm
 #define PIXELSIZE	5.8f	//in um
@@ -106,28 +107,23 @@ int main() {
 
 	cout << "done" << endl;
 
-	if(c.head_trilog->before == NULL){
-		cout << "ENDING" << endl;
-		terminate();
-	}
-
 	Finder f(c.head_trilog);
 
-	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
+	//TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 
-	cout << "found?" << endl;
-
-	cout << match->alpha1 << endl;
-
+	//cout << match->alpha1 << endl;
+	StarCatalog cat;
+	cat.translateCatalog(c);
+/*
 	//Simple Iteratorversuche
-	/*while(c.current->next != NULL){
+	while(c.current->next != NULL){
 		printf("id: %d\n",c++.id);
 	}
 
 	while(c.current->before != NULL){
 		printf("id: %d\n",c--.id);
-	}*/
-
+	}
+*/
 	cout << "Done" << endl;
 
     return 0;

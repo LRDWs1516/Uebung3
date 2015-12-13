@@ -170,7 +170,6 @@ void Catalog::setTriangleCatalog(){
 	}
 }
 
-
 void Catalog::makeCatalog(const char * fname){
 	this->cSize = 0;
 	printf("Start Creating Catalogs\n");
@@ -204,7 +203,7 @@ void Catalog::makeCatalog(const char * fname){
 	}
 	this->head_starlog = this->head_starlog->next;
 	this->head_starlog->before = NULL;
-	this->current = this->head_starlog;
+	this->current = this->head_starlog->next;
 }
 
 StarCatalogEntry& Catalog::operator++(int i){
@@ -223,5 +222,5 @@ int Catalog::size() {
 }
 
 void Catalog::reset(){
-	this->current = this->head_starlog;
+	this->current = this->head_starlog->next;
 }
