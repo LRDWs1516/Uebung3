@@ -156,6 +156,5 @@ double Vector3D::angleTo(Vector3D second){
 		 RID3 curr = c.findClosest2(i);
 		 curr.rID[0] = i;
 		 Vector3D alphas = c.triangleGetAlpha(curr);
-		 //TriangleEntry newest(curr.rID, NULL, NULL);
 	}
  }

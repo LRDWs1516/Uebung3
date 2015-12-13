@@ -2,7 +2,6 @@
 //This Program has a problem: X is vertical, Y is horizontal
 
 #include "catalog.h"
-//#include "bildmanipulation.h"
 #include "PointArray.h"
 #include "catalogmanipulation.h"
 #include "rotationsmatrix.h"
@@ -38,6 +37,7 @@ double getAng(Point2D a, Point2D b, double app){
 	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
 }
 
+//Berechnet Winkel bac
 double getStarAng(Point2D a, Point2D b, Point2D c){
 	Point2D av, bv;
 	double 	IavI = 0, IbvI = 0;
@@ -63,7 +63,7 @@ int main() {
     first.readImageFromFile("Sterne.bmp", 1);
 
     second = first;
-    second.thresholdImage(90); 						//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
+    second.thresholdImage(0); 							//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
     second.writeImageToFile("sterne1.bmp"); 			// Zwischenergebnis
     first = second;
 
@@ -81,7 +81,7 @@ int main() {
     }
 
 	//Calculate IDs of most central Triangle of stars (central 0, triplet 0 and 1)
-    second.writeImageToFile("sterne3.bmp"); //Bild speichern
+    second.writeImageToFile("sterne3.bmp");//Bild speichern
 
     vector<Point2D> triplet;
     triplet = fst.getCentralTriangle(first);
@@ -90,8 +90,8 @@ int main() {
     double avg = getAvgAng(fov, first);
     double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
-   //double beta= fmod(M_PI-fabs(alpha1+alpha2), M_PI);
-   double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+	//double beta= fmod(M_PI-fabs(alpha1+alpha2), M_PI);
+	double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
 
     cout << "beta " << beta*180/M_PI << endl;
 

@@ -196,7 +196,6 @@ vector<Point2D> PointArray::getCentralTriangle(Image & im){
     Point2D a = this->centralPoints.at(central);
     Point2D b = this->centralPoints.at(dist1);
     double tr = sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
-    cout << "Dist: " << tr << endl;
     int dist2 = this->findClosest(this->getCenterof(central),tr);
     Point2D c = this->centralPoints.at(dist2);
     retVec.push_back(a);

@@ -28,7 +28,7 @@ public:
 	Point2D(double, double);
 	double getDistance(Point2D);
 	void printVal();
-	double getAngleTo(Point2D, double);
+	double getAngleTo(Point2D, double); //takes point and relation between Pixels and radiants
 };
 
 #endif /* POINTS_H_ */
