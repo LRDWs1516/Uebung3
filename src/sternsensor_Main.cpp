@@ -90,9 +90,10 @@ int main() {
     double avg = getAvgAng(fov, first);
     double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
-    double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+   //double beta= fmod(M_PI-fabs(alpha1+alpha2), M_PI);
+   double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
 
-    cout << "beta " << beta*180/M_PI*2 << endl;
+    cout << "beta " << beta*180/M_PI << endl;
 
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
@@ -105,13 +106,14 @@ int main() {
 	c.makeCatalog("catalog.txt");
 	c.setTriangleCatalog();
 
-	cout << "done" << endl;
-
-	//TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
+	cout << "Done Catalogmaking" << endl;
+	
+	Finder f(c.getHeadTrilog());
+	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 
 	//cout << match->alpha1 << endl;
-	StarCatalog cat;
-	cat.translateCatalog(c);
+	//StarCatalog cat;
+	//cat.translateCatalog(c);
 /*
 	//Simple Iteratorversuche
 	while(c.current->next != NULL){
