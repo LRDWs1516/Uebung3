@@ -48,12 +48,12 @@ TriangleCatalogEntry::TriangleCatalogEntry(){
 	this->id1=-88;
 }
 
-//Eintrag für ein Dreieck, immer das kleinste
+//Eintrag für ein Dreieck, immer das kleinste, Winkel in Rad
 TriangleCatalogEntry::TriangleCatalogEntry(int id1, int id2, int id3, double beta, double alpha1, double alpha2){
-	this -> id1=id1;
+	this -> id1=id1; 
 	this -> id2=id2;
 	this -> id3=id3;
-	this -> beta=beta; //Winkel im Dreieck, alpah1+alpha2 sei minimal, 180-alpha1-alpha2=beta
+	this -> beta=beta; //Winkel im Dreieck, alpah1+alpha2 sei minimal,PI-alpha1-alpha2=beta
 	this -> alpha1=alpha1;
 	this -> alpha2=alpha2;
 	this -> before=NULL;
@@ -91,33 +91,46 @@ TriangleCatalogEntry* TriangleCatalogEntry::getNext(){
 
 TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 
-	double alpha1=360;
+	double d1=5; //Kugel hat durchmesser=2 daher sollte es nichts größer als 5 geben
 	StarCatalogEntry *star1;
-	double alpha2=360;
+	double d2=5;
 	StarCatalogEntry *star2;
 
 	StarCatalogEntry *star= this -> head_starlog->next;	
 
-	double thisalpha;
+	double distance;
+
 	while(star!= NULL){
 		if (star->id!=self->id){
-			//Hier bin ich mir nicht sicher ob die Winkel so richtig berechnet werden zwischen zwei beliebigen sternen zum hauptstern
+			double x= (self->x-star->x)*(self->x-star->x);
+			double y=(self->y-star->y)*(self->y-star->y);	
+			double z=(self->z-star->z)*(self->z-star->z);
+			distance=sqrt(x+y+z);
+			int nr=star->id;
 			
-			thisalpha=fabs((self->declination)-(star->declination));
-			int nr=star->id;		
-			if(thisalpha< fabs(alpha1)){
+			if(distance<d1){
 				star1=star;
-				alpha1=thisalpha;
-			}else if(thisalpha< fabs(alpha2) && star->id != star1->id){			
+				d1=distance;
+			}else if(star->id != star1->id && distance<d2){
 				star2=star;
-				alpha2=thisalpha;
+				d2=distance;
 			}
-		
-		}	
+
+				
+		}
+	
 		star=star->next;
 	}
+	//cout<<"d1 "<<d1 << " d2 "<<d2 <<endl;
+	double alpha1= acos(d1*d1/-4+1/2);
+	double alpha2= acos(d2*d2/-4+1/2);
+	double x= (star1->x-star2->x)*(star1->x-star2->x);
+	double y=(star1->y-star2->y)*(star1->y-star2->y);	
+	double z=(star1->z-star2->z)*(star1->z-star2->z);
+	double d3=sqrt(x+y+z);	
+	
 
-	double beta= fmod(180.0-fabs(alpha1+alpha2), 360.0);
+	double beta= acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
 	TriangleCatalogEntry t = TriangleCatalogEntry(self->id, star1->id, star2->id,beta, alpha1, alpha2);
 
 	//speichert die drei Sterne im Dreieck in ein Array und fügt sie dem TriangleCatalogEntry hinzu
@@ -127,7 +140,7 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 	stars[2] = star2;
 	t.setStars(stars);
 
-	//printf("self %d id2 %d id3 %d beta %f alpha1 %f alpha2 %f \n", t.id1, t.id2,t.id3,t.beta,t.alpha1,t.alpha2);
+
 	return t;
 }
 
@@ -159,27 +172,23 @@ int getNumberofLines(ifstream & file){
 
 void Catalog::setTriangleCatalog(){
 	StarCatalogEntry *star=this->head_starlog->next;
-	cout<< "Starlog head next: "<<this->head_starlog->next->id <<endl;
-	TriangleCatalogEntry *t_before=this->head_trilog;
-	int i=0;
-	while (star!=NULL && i<10){
-		i++;
-		TriangleCatalogEntry t=searchTriangle(star);
-		t.setBefore(t_before);
-		if (i==1){
-			this->head_trilog->setNext(&t);
-		}else{
-			t_before->next=&t;
-		}
+	//cout<< "Starlog head next: "<<this->head_starlog->next->id <<endl;
+	TriangleCatalogEntry *t_b=this->head_trilog;
+	
+	while (star!=NULL ){
+	
+		TriangleCatalogEntry *t=new TriangleCatalogEntry();
+		*t=searchTriangle(star);	
+		
+		t->before=t_b;	
+		t_b->next= t;
 		
 		//t_before->setNext(&t);
 		//cout << "trilog next " << t_before->next->id1 <<" "<<t_before->next->id2<<" "<<t_before->next->id3<<endl;
-		t_before=&t;
-		cout<<i<<" t before "<< t.before->id1<< " t id1 "<< t.id1<<endl;
-		cout<<" head trilog next : "<< this->head_trilog->next->id1<<endl;
+		t_b= t;
 		star=star->next;
 	}
-	cout<<" Trilog head in setTriangleCatalog "<< this->head_trilog->next->id1 <<endl;
+	
 }
 TriangleCatalogEntry* Catalog::getHeadTrilog(){
 
@@ -206,9 +215,11 @@ void Catalog::makeCatalog(const char * fname){
 		
 		fscanf(file, "%d %lf %lf %lf\n", &index, &rectascension,&declination,&mag );
 		if (mag<6.5){		
-			double f=0.25; //Brennweite in Millimeter...vielleicht lieber 10 pc ??, radius eig egal!
+			double f=1; //Brennweite in Millimeter...vielleicht lieber 10 pc ??, radius eig egal!
 			//**Umrechnung in Kartesische Koordinaten**	
-			x= f*sin(declination)*cos(rectascension);
+			rectascension=rectascension*M_PI/180;
+			declination=declination*M_PI/180;
+			x= f*sin(declination )*cos(rectascension);
 			y= f*sin(declination)*sin(rectascension);
 			z= f*cos(declination);
 			StarCatalogEntry *e= new StarCatalogEntry(s_before,index, x,y,z,mag, rectascension, declination);
