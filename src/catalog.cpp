@@ -45,6 +45,7 @@ TriangleCatalogEntry::TriangleCatalogEntry(){
 	for(int i=0; i<3; i++){
 		this->stars[i] = NULL;
 	}
+	this->id1=-88;
 }
 
 //Eintrag für ein Dreieck, immer das kleinste
@@ -158,16 +159,31 @@ int getNumberofLines(ifstream & file){
 
 void Catalog::setTriangleCatalog(){
 	StarCatalogEntry *star=this->head_starlog->next;
-	cout<< "Starlog head: "<<this->head_starlog->next <<endl;
+	cout<< "Starlog head next: "<<this->head_starlog->next->id <<endl;
 	TriangleCatalogEntry *t_before=this->head_trilog;
-	while (star!=NULL){
+	int i=0;
+	while (star!=NULL && i<10){
+		i++;
 		TriangleCatalogEntry t=searchTriangle(star);
 		t.setBefore(t_before);
-		t_before->next=&t;
-		cout << "trilog next" << t_before->next->id1 <<endl;
+		if (i==1){
+			this->head_trilog->setNext(&t);
+		}else{
+			t_before->next=&t;
+		}
+		
+		//t_before->setNext(&t);
+		//cout << "trilog next " << t_before->next->id1 <<" "<<t_before->next->id2<<" "<<t_before->next->id3<<endl;
 		t_before=&t;
+		cout<<i<<" t before "<< t.before->id1<< " t id1 "<< t.id1<<endl;
+		cout<<" head trilog next : "<< this->head_trilog->next->id1<<endl;
 		star=star->next;
 	}
+	cout<<" Trilog head in setTriangleCatalog "<< this->head_trilog->next->id1 <<endl;
+}
+TriangleCatalogEntry* Catalog::getHeadTrilog(){
+
+	return this->head_trilog;
 }
 
 void Catalog::makeCatalog(const char * fname){
@@ -201,9 +217,9 @@ void Catalog::makeCatalog(const char * fname){
 			cSize++;
 		}
 	}
-	this->head_starlog = this->head_starlog->next;
+
 	this->head_starlog->before = NULL;
-	this->current = this->head_starlog->next;
+	this->current = this->head_starlog;
 }
 
 StarCatalogEntry& Catalog::operator++(int i){
@@ -222,5 +238,5 @@ int Catalog::size() {
 }
 
 void Catalog::reset(){
-	this->current = this->head_starlog->next;
+	this->current = this->head_starlog;
 }

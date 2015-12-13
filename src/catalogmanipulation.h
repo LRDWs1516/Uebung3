@@ -7,18 +7,17 @@
 
 #ifndef CATALOGMANIPULATION_H_
 #define CATALOGMANIPULATION_H_
-#include "Image.h"
-#include "PointArray.h"
+#include "bildmanipulation.h"
 #include "catalog.h"
 
 bool comparator(double, double);
-
+bool approx(double, double);
 class Finder{
 public:
 	Finder(TriangleCatalogEntry *);
 	TriangleCatalogEntry* getMatch(double,double,double);
 private:
-	TriangleCatalogEntry *head_trilog=new TriangleCatalogEntry();
+	TriangleCatalogEntry *head_trilog;
 	TriangleCatalogEntry match;
 };
 
