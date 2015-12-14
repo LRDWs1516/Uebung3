@@ -195,7 +195,7 @@ int main() {
     first.drawCross((Point2D)triplet.at(2),0,red,0);
     first.writeImageToFile("sterne4.bmp");
 
-	//Multithreading
+	//Multithreading the code
 	g1write = g2write = false;
 	thread g1(generation1,fname2,alpha2,alpha1,beta);
 	thread g2(generation2,fname2,central,avg, mainStart);
