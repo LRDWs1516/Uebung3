@@ -122,8 +122,9 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 		star=star->next;
 	}
 	//cout<<"d1 "<<d1 << " d2 "<<d2 <<endl;
-	double alpha1= acos(d1*d1/-4+1/2);
-	double alpha2= acos(d2*d2/-4+1/2);
+	double alpha1= acos((d1*d1-2)/(-2));
+	double alpha2= acos((d2*d2-2)/(-2));
+	//cout<<"alpha1 "<<alpha1 << " alpha2 "<<alpha2 <<endl;
 	double x= (star1->x-star2->x)*(star1->x-star2->x);
 	double y=(star1->y-star2->y)*(star1->y-star2->y);	
 	double z=(star1->z-star2->z)*(star1->z-star2->z);

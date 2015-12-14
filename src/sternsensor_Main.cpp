@@ -38,6 +38,7 @@ double getAng(Point2D a, Point2D b, double app){
 	return (sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y))*app);
 }
 
+//Gibt Winkel beta aus zeichnung zurück
 //Berechnet Winkel bac
 double getStarAng(Point2D a, Point2D b, Point2D c){
 	Point2D av, bv;
@@ -50,6 +51,26 @@ double getStarAng(Point2D a, Point2D b, Point2D c){
 
 	return cos((av.x*bv.x+av.y*bv.y)/(IavI*IbvI));
 }
+
+//Gibt Winkel beta aus zeichnung zurück
+//Annahme: gesucher winkel bei b, ergibt gleiches Ergebnis wie getStarAng
+double getStarAng2(Point2D a, Point2D b, Point2D c){
+	double d1=sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+	double d2=sqrt((c.x-b.x)*(c.x-b.x)+(c.y-b.y)*(c.y-b.y));
+	double d3=sqrt((a.x-c.x)*(a.x-c.x)+(a.y-c.y)*(a.y-c.y));
+	return  acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
+}
+
+//Gibt Winkel beta aus zeichnung zurück
+//Annahme: gesucher winkel bei a 
+double getStarAng3(Point2D a, Point2D b, Point2D c){
+	double d1=sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+	double d2=sqrt((c.x-a.x)*(c.x-a.x)+(c.y-a.y)*(c.y-a.y));
+	double d3=sqrt((b.x-c.x)*(b.x-c.x)+(b.y-c.y)*(b.y-c.y));
+	return  acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
+}
+
+
 
 int main() {
 
@@ -97,7 +118,11 @@ int main() {
 
     double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
-	double beta = getStarAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+
+    double beta = getStarAng2((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+   cout<<"beta1 "<<beta<<endl;
+   beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+   cout<<"beta2 "<<beta<<endl;
 
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
@@ -116,12 +141,12 @@ int main() {
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 
 	//cout << match->alpha1 << endl;
-	StarCatalog cat;
-	cat.translateCatalog(c);
-	TriangleCatalog tcat;
-	tcat.createCatalog(cat, avg);
+	//StarCatalog cat;
+	//cat.translateCatalog(c);
+	//TriangleCatalog tcat;
+	//tcat.createCatalog(cat, avg);
 	cout << "-----" << endl;
-	tcat.containsTriangle(central);
+	//tcat.containsTriangle(central);
 /*
 	//Simple Iteratorversuche
 	while(c.current->next != NULL){
