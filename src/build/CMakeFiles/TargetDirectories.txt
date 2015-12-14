@@ -1,1 +1,0 @@
-/home/david/Daten_1/CPPProjekte/Geanie/LRDUebung3/src/build/CMakeFiles/lrd-ue3.dir
