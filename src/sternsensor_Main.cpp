@@ -73,7 +73,7 @@ double getStarAng3(Point2D a, Point2D b, Point2D c){
 	return  acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
 }
 
-void generation1(const char * fname2, double alpha2, double alpha1, double beta){
+void generation1(const char * fname2, double alpha2, double alpha1, double beta, double avg){
 
     clock_t start1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	Catalog c;
@@ -81,13 +81,15 @@ void generation1(const char * fname2, double alpha2, double alpha1, double beta)
 	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	cout << "Starlist from " << fname2 << " created after " << end1-start1 << "ms" << endl;
 	c.setTriangleCatalog();
+	end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	Finder f(c.getHeadTrilog());
-	cout << "Trianglelist created" << endl;
+	cout << "Trianglelist created after " << end1-start1 << "ms" << endl;
 	cout << "Listsearching" << endl;
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 	end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	
 	cout << "Listsearch was conclusive after: " << end1-start1 << "ms" << endl;
+	cout << "-Match accuracy: " << 0.001*180/M_PI << "°(deg) = " << 0.001*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << 0.001 << " rad -> " << 0.001/avg << " Pixel Fehler"  << endl;
 	cout << "-Angles " << match->alpha1 << " " << match->alpha2 << " " << match->beta << endl;
 	cout << "-Solution IDs: " << match->id1 << " " << match->id2 << " " << match->id3 << endl;
 }
@@ -115,9 +117,9 @@ void generation2(const char * fname2, Triangle central, double avg, clock_t main
 	if(thres >= 0.01) cout << "--search inconclusive after " << end-start << "ms" << endl;
 	else{
 		cout << "Vectorsearch was conclusive after " << end-start << "ms" << endl;
-		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad"  << endl;
+		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad -> " << thres/avg << " Pixel Fehler"  << endl;
 		cout << "-Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
-		cout << "-Solution IDs: " << solutionIDs.rID[0] << " " << solutionIDs.rID[1] << " " << solutionIDs.rID[2] << endl;
+		cout << "-Solution IDs: " << cat.getMainCatalog().at(solutionIDs.rID[0]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[1]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[2]).getID() << endl;
 	}
 }
 
@@ -138,26 +140,19 @@ int main() {
     Point2D fov = getfov(FOCUS, PIXELSIZE, first);
     //Berechnung Kameraparameter
     double avg = getAvgAng(fov, first); 				//avg rad/pixel
+    cout << "-°/Pixel: " << avg*180/M_PI << endl; 
 
     second = first;
-    second.thresholdImage(0); 							//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
+    second.thresholdImage(1); 							//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
     second.writeImageToFile("sterne1.bmp"); 			// Zwischenergebnis
     first = second;
 
     fst.fill2(second,1); 								//Alle hellen Blobs finden
-    fst.getCentrals();									//Zentren der Blobs finden WICHTIG FÜR ERKENNUNG IN STERNENKATALOG
+    fst.getCentrals(first);								//Zentren der Blobs finden WICHTIG FÜR ERKENNUNG IN STERNENKATALOG
     second.drawBinarysToImage(fst.overlay, pink); 		//Overlay aufzeichnen
     second.drawArrayToImage(fst.startPoints, white); 	//Alle Startpunkte die in fst.fill2() gefunden wurden
     													//gr�n einzeichnen (je nur 1 Pixel pro Objekt)
-    second.writeImageToFile("sterne2.bmp"); 			//Zwischenergebnis speichern
     cout << "-found " << fst.allObjects.size() << " objects." << endl;
-
-    for(int i = 0; i<fst.allObjects.size(); i++){		//Alle gefundenen Blobs in unterschiedlichen Farben einzeichnen
-		second.drawArrayToImage(fst.allObjects.at(i), Color(50+i*20,100+i*10,200 + i*5));
-    }
-
-	//Calculate IDs of most central Triangle of stars (central 0, triplet 0 and 1)
-    second.writeImageToFile("sterne3.bmp");//Bild speichern
     
 	cout << "__________________________________________________________________________" << endl;
 	cout << "Searching for central Triangle in Image" << endl;
@@ -174,23 +169,24 @@ int main() {
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
 
     double beta = getStarAng2((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-   cout << "--BETA 1: " << beta << endl;
-   beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-   cout << "--BETA 2: " << beta << endl;
-
+	cout << "--BETA 1: " << beta << endl;
+	beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+	cout << "--BETA 2: " << beta << endl;
+	
+	//Markierungen einzeichnen
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
     first.drawCross((Point2D)triplet.at(2),0,red,0);
-    first.writeImageToFile("sterne4.bmp");
+    first.writeImageToFile("sterne3.bmp");				//Kontrollergebnis speichern
 	cout << "__________________________________________________________________________" << endl;
 	
 	//Multithreading code
-	thread g1(generation1,fname2,alpha2,alpha1,beta);
+	thread g1(generation1,fname2,alpha2,alpha1,beta,avg);
 	thread g2(generation2,fname2,central,avg, mainStart);
 	g2.join();
 	g1.join();
 	//Non Multithreading code
-	//~ generation1(fname2,alpha2,alpha1,beta);
+	//~ generation1(fname2,alpha2,alpha1,beta,avg);
 	//~ generation2(fname2,central,avg, mainStart);
 	
 	clock_t mainEnd = clock() / (double)CLOCKS_PER_SEC * 1000;

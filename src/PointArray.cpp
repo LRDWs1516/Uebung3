@@ -152,19 +152,23 @@ void PointArray::fill2(Image & input, int type)
 	}
 }
 
-Point2D PointArray::getCenter(vector<Point2D> object){
+Point2D PointArray::getCenter(vector<Point2D> object, Image & im){
 	Point2D center;
 	int obsize = object.size();
+	double brightness = 0;
 	for(int i = 0; i<obsize; i++){
-		center.x += object.at(i).x/((double)(obsize));
-		center.y += object.at(i).y/((double)(obsize));
+		center.x += object.at(i).x/((double)(obsize))*im.Matrix.at(object.at(i).x).at(object.at(i).y).absolute();
+		center.y += object.at(i).y/((double)(obsize))*im.Matrix.at(object.at(i).x).at(object.at(i).y).absolute();
+		brightness += im.Matrix.at(object.at(i).x).at(object.at(i).y).absolute()/(double)(obsize);
 	}
+	center.x /= brightness;
+	center.y /= brightness;
 	return center;
 }
 
-void PointArray::getCentrals(){
+void PointArray::getCentrals(Image & im){
 	for(int i = 0; i<this->allObjects.size(); i++){
-		this->centralPoints.push_back(getCenter(allObjects.at(i)));
+		this->centralPoints.push_back(getCenter(allObjects.at(i), im));
 	}
 }
 

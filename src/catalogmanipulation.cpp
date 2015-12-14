@@ -41,12 +41,9 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 		//Sortiert Vektoren
 		sort(tri_vector.begin(), tri_vector.end(), comparator);
 		sort(deg_vector.begin(), deg_vector.end(), comparator);
-		 //cout<<" deg->alpa1 "<<deg_vector[0]<<" deg->alpah2 "<<deg_vector[1] <<" deg->beta "<<deg_vector[2]<<endl;
-		//cout<<" tri->alpa1 "<<tri->alpha1<<" tri->alpah2 "<<tri->alpha2 <<" tri->beta "<<tri->beta<<endl;
-		if(approx(deg_vector[0], tri_vector[0])&& approx(deg_vector[1], tri_vector[1])&&approx(deg_vector[2], tri_vector[2])){			
-			//double d1=sqrt(2-2*cos(tri_vector[0]));
-			//double d2=sqrt(2-2*cos(tri_vector[1]));
-			//double d3=sqrt(2-2*cos(tri_vector[2]));	
+
+		if(approx(deg_vector[0], tri_vector[0]) && approx(deg_vector[1], tri_vector[1]) && approx(deg_vector[2], tri_vector[2])){			
+
 			//~ cout<<"Match found!"<<endl;
 			//~ cout<<"Match angles: alpa1 "<<tri->alpha1<<", alpah2 "<<tri->alpha2 <<", beta "<<tri->beta<<endl;
 			//~ cout<<"Match ids: id1 "<<tri->id1<<", id2 "<<tri->id2<<", id3 "<<tri->id3<<endl;
