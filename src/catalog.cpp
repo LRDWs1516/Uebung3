@@ -198,7 +198,6 @@ TriangleCatalogEntry* Catalog::getHeadTrilog(){
 
 void Catalog::makeCatalog(const char * fname){
 	this->cSize = 0;
-	printf("Start Creating Catalogs\n");
 	FILE *file;
 	file= fopen(fname, "r");
 	double size=getNumberOfLines(file);

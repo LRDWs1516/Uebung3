@@ -21,6 +21,7 @@ struct Triangle{
 struct RID3{
 	int rID[3] = {-1,-1,-1};
 	RID3(int[3]);
+	RID3(int, int, int);
 };
 
 struct Vector3D{
@@ -73,9 +74,9 @@ private:
 class TriangleCatalog{
 public:
 	void createCatalog(StarCatalog, double);
-	bool containsTriangle(Triangle, double);
+	bool containsTriangle(Triangle, double, Vector3D *, RID3 *);
 private:
-	bool compareTriangle(Triangle, TriangleEntry, double);
+	bool compareTriangle(Triangle, TriangleEntry, double, Vector3D *);
 	vector<TriangleEntry> mainCatalog;
 };
 

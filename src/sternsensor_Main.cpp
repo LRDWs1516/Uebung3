@@ -98,7 +98,7 @@ int main() {
     													//gr�n einzeichnen (je nur 1 Pixel pro Objekt)
     second.writeImageToFile("sterne2.bmp"); 			//Zwischenergebnis speichern
 
-    cout << "found " << fst.allObjects.size() << " objects." << endl;
+    cout << "found " << fst.allObjects.size() << " objects." << endl << endl;
 
     for(int i = 0; i<fst.allObjects.size(); i++){		//Alle gefundenen Blobs in unterschiedlichen Farben einzeichnen
 		second.drawArrayToImage(fst.allObjects.at(i), Color(50+i*20,100+i*10,200 + i*5));
@@ -107,58 +107,77 @@ int main() {
 	//Calculate IDs of most central Triangle of stars (central 0, triplet 0 and 1)
     second.writeImageToFile("sterne3.bmp");//Bild speichern
 
+	cout << "Searching for central Triangle in Image" << endl;
     vector<Point2D> triplet;
     triplet = fst.getCentralTriangle(first);
     Triangle central(triplet);
+    cout << "-Found central triangle:" << endl;
     central.calculateAlphas(avg);
-    
-    cout << "ALPHA 1: " << central.alphas[0] << endl;
-    cout << "ALPHA 2: " << central.alphas[1] << endl;
-    cout << "ALPHA 3: " << central.alphas[2] << endl;
+    cout << "--ALPHA 1: " << central.alphas[0] << endl;
+    cout << "--ALPHA 2: " << central.alphas[1] << endl;
+    cout << "--ALPHA 3: " << central.alphas[2] << endl;
 
     double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
 
     double beta = getStarAng2((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-   cout<<"beta1 "<<beta<<endl;
+   cout << "--BETA 1: " << beta << endl;
    beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-   cout<<"beta2 "<<beta<<endl;
+   cout << "--BETA 2: " << beta << endl << endl;
 
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
     first.drawCross((Point2D)triplet.at(2),0,red,0);
-
     first.writeImageToFile("sterne4.bmp");
 
-    cout << "Catalogmaking:" << endl;
+	cout << "__________________________________________________________________________" << endl;
+	cout << "\"Listsearching\"" << endl;
+    cout << "-Creating list of stars" << endl;
+    clock_t start1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	Catalog c;
 	c.makeCatalog("catalog.txt");
+	cout << "--Done Listing" << endl;
+	cout << "-Creating list of triangles" << endl;
 	c.setTriangleCatalog();
-
-	cout << "Done Catalogmaking" << endl;
+	cout << "--Done listing" << endl;
 	
+	cout << "-Searching for matching triangle" << endl;
 	Finder f(c.getHeadTrilog());
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
+	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
+	cout << "--search conclusive after: " << end1-start1 << "ms" << endl;
 
-	//cout << match->alpha1 << endl;
+	cout << "__________________________________________________________________________" << endl;
+	cout << "\"Vectorsearching\":" << endl;
+	cout << "-Creating vector of stars from list of stars now" << endl;
+	clock_t start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	Catalog c2;
+	c2.makeCatalog("catalog.txt");
 	StarCatalog cat;
-	cat.translateCatalog(c);
+	cat.translateCatalog(c2);
+	clock_t end = clock() / (double)CLOCKS_PER_SEC * 1000; 			//###
+	cout << "--vector completed after " << end-start << "ms" << endl;
+	cout << "-Creating vector of triangles from vector of stars" << endl;
 	TriangleCatalog tcat;
 	tcat.createCatalog(cat, avg);
-	double thres = 0;													//
-	while(!tcat.containsTriangle(central, thres)) thres += 0.000001;	//berechnet auf 10⁻⁶ Grad(°) genau. Ausgabe in RAD
-	cout << "-----" << endl;
-	//tcat.containsTriangle(central);
-/*
-	//Simple Iteratorversuche
-	while(c.current->next != NULL){
-		printf("id: %d\n",c++.id);
+	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
+	cout << "--vector completed after " << end-start << "ms" << endl << endl;
+	cout << "-iteratively searching for best match" << endl;
+	Vector3D solutionAngles(0,0,0);
+	RID3 solutionIDs(0,0,0);
+	double thres = 0;																								//
+	while(!tcat.containsTriangle(central, thres, &solutionAngles, &solutionIDs) && thres < 0.01) thres += 0.000001;	//iteratives vergroessern des Suchthresholds
+	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
+	if(thres >= 0.01) cout << "--search inconclusive after " << end-start << "ms" << endl;
+	else{
+		cout << "--Match found" << endl;
+		cout << "---Match accuracy: " << thres*180/M_PI << "°(deg), bzw. " << thres << " rad"  << endl;
+		cout << "---Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
+		cout << "--Solution IDs: " << solutionIDs.rID[0] << " " << solutionIDs.rID[1] << " " << solutionIDs.rID[2] << endl;
+		cout << "---search conclusive after " << end-start << "ms" << endl;
 	}
+	cout << "__________________________________________________________________________" << endl;
 
-	while(c.current->before != NULL){
-		printf("id: %d\n",c--.id);
-	}
-*/
 	cout << "Done" << endl;
 
     return 0;

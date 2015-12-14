@@ -35,6 +35,12 @@ void Triangle::calculateAlphas(double avg){
 	this->rID[2] = id[2];
 }
 
+RID3::RID3(int a, int b,int c){
+	this->rID[0] = a;
+	this->rID[1] = b;
+	this->rID[2] = c;
+}
+
 Vector3D::Vector3D(double c[3]){
 	this->c[0] = c[0];
 	this->c[1] = c[1];
@@ -192,11 +198,10 @@ int TriangleEntry::getID(int i){
 		 Vector3D alphas = c.triangleGetAlpha(curr);
 		 TriangleEntry additional(curr, alphas);
 		 this->mainCatalog.push_back(additional);
-		 //cout << additional.getalpha(0) << " " << additional.getalpha(1) << " " << additional.getalpha(2) << endl;
 	}
  }
  
- bool TriangleCatalog::compareTriangle(Triangle t1, TriangleEntry t2, double thres){
+ bool TriangleCatalog::compareTriangle(Triangle t1, TriangleEntry t2, double thres, Vector3D * solution){
 	 vector<double> alphas1 = {t1.alphas[0], t1.alphas[1], t1.alphas[2]};
 	 vector<double> alphas2 = {t2.getalpha(0), t2.getalpha(1), t2.getalpha(2)};
 	 for(int j = 0; j<3; j++){
@@ -205,21 +210,19 @@ int TriangleEntry::getID(int i){
 		 }
 	}
 	if(alphas2.size() == 0){
-		cout << "found Match" << endl;
-		cout << t2.getalpha(0) << " " << t2.getalpha(1) << " " << t2.getalpha(2) << endl;
+		*solution = Vector3D(t2.getalpha(0),t2.getalpha(1),t2.getalpha(2));
 		return true;
 	}
 	return false;
  }
  
- bool TriangleCatalog::containsTriangle(Triangle t, double thres){
-	 bool match = false;
+ bool TriangleCatalog::containsTriangle(Triangle t, double thres, Vector3D * solutionAngles, RID3 * solutionIDs){
+	bool match = false;
 	for(int i = 0; i<this->mainCatalog.size(); i++){
-		if(compareTriangle(t, this->mainCatalog.at(i), thres)){
-			cout << "MATCH IDs: " << this->mainCatalog.at(i).getID(0) << " " << this->mainCatalog.at(i).getID(1) << " " << this->mainCatalog.at(i).getID(2) << endl;
+		if(compareTriangle(t, this->mainCatalog.at(i), thres, solutionAngles)){
+			*solutionIDs = RID3(this->mainCatalog.at(i).getID(0), this->mainCatalog.at(i).getID(1), this->mainCatalog.at(i).getID(2));
 			match = true;
 		}
 	}
-	//cout << "no match found" << endl;
 	return match;
  }
