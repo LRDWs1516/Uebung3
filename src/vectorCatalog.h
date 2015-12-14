@@ -8,6 +8,16 @@
 #include "PointArray.h"
 #include "vectorCatalog.h"
 
+struct Triangle{
+	Point2D A;
+	Point2D B;
+	Point2D C;
+	double alphas[3];
+	Triangle(vector<Point2D>);
+	void setCorners(vector<Point2D>);
+	void calculateAlphas(double);
+	};
+
 struct RID3{
 	int rID[3] = {-1,-1,-1};
 	RID3(int[3]);
@@ -43,8 +53,8 @@ private:
 class TriangleEntry{
 public:
 	TriangleEntry(RID3, Vector3D);
-	bool compareTo(Triangle, double);
 	double getalpha(int);
+	int getID(int);
 private:
 	int rID[3];
 	double alpha[3];
@@ -63,8 +73,9 @@ private:
 class TriangleCatalog{
 public:
 	void createCatalog(StarCatalog, double);
-	bool containsTriangle(Triangle);
+	bool containsTriangle(Triangle, double);
 private:
+	bool compareTriangle(Triangle, TriangleEntry, double);
 	vector<TriangleEntry> mainCatalog;
 };
 

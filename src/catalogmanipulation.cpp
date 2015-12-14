@@ -63,7 +63,7 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 bool approx(double b, double a){
 
 	double c= a+0.001;
-	double d=a-0.001;
+	double d= a-0.001;
 	if(c>b && d<b){
 		return true;
 	}

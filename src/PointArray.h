@@ -20,16 +20,6 @@
 #include "Image.h"
 #include "Points.h"
 
-struct Triangle{
-	Point2D A;
-	Point2D B;
-	Point2D C;
-	double alphas[3];
-	Triangle(vector<Point2D>);
-	void setCorners(vector<Point2D>);
-	void calculateAlphas(double);
-	};
-
 //Class used to flood edges and determine connected Points in an image
 class PointArray{
 public:

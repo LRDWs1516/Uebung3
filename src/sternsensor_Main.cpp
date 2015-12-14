@@ -141,10 +141,12 @@ int main() {
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 
 	//cout << match->alpha1 << endl;
-	//StarCatalog cat;
-	//cat.translateCatalog(c);
-	//TriangleCatalog tcat;
-	//tcat.createCatalog(cat, avg);
+	StarCatalog cat;
+	cat.translateCatalog(c);
+	TriangleCatalog tcat;
+	tcat.createCatalog(cat, avg);
+	double thres = 0;													//
+	while(!tcat.containsTriangle(central, thres)) thres += 0.000001;	//berechnet auf 10⁻⁶ Grad(°) genau. Ausgabe in RAD
 	cout << "-----" << endl;
 	//tcat.containsTriangle(central);
 /*
