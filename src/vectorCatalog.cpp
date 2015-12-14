@@ -154,19 +154,13 @@ int TriangleEntry::getID(int i){
 	 int rid[3] = {-1,-1,-1};
 	 for(int i = 0; i < this->mainCatalog.size(); i++){
 		 double dist = this->mainCatalog.at(i).distanceTo(this->mainCatalog.at(id));
-		 if(dist < d[0] && id != i){
+		 if(dist <= d[1] && id != i){
+			 d[1] = d[0];
 			 d[0] = dist;
+			 rid[2] = rid[1];
 			 rid[1] = i;
 		 }
 	 }
-	 for(int i = 0; i < this->mainCatalog.size(); i++){
-		 double dist = this->mainCatalog.at(i).distanceTo(this->mainCatalog.at(id));
-		 if(dist > d[0] && dist < d[1] && id != i){
-			 d[1] = dist;
-			 rid[2] = i;
-		 }
-	 }
-	 //cout << d[0] << " " << d[1] << " " << rid[0] << " " << rid[1] << endl;
 	 RID3 re(rid);
 	 return re;
  }

@@ -13,8 +13,6 @@ using namespace std;
 #define FOCUS		25.0f	//in mm
 #define PIXELSIZE	5.8f	//in um
 
-bool g1write, g2write;
-
 void sleepcp(int milliseconds) // cross-platform sleep function
 {
     clock_t time_end;
@@ -89,10 +87,6 @@ void generation1(const char * fname2, double alpha2, double alpha1, double beta)
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
 	end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	
-	g2write = true;
-	while(!g1write){}
-	
-	cout << endl << endl;
 	cout << "Listsearch was conclusive after: " << end1-start1 << "ms" << endl;
 	cout << "-Angles " << match->alpha1 << " " << match->alpha2 << " " << match->beta << endl;
 	cout << "-Solution IDs: " << match->id1 << " " << match->id2 << " " << match->id3 << endl;
@@ -118,20 +112,13 @@ void generation2(const char * fname2, Triangle central, double avg, clock_t main
 	while(!tcat.containsTriangle(central, thres, &solutionAngles, &solutionIDs) && thres < 0.01) thres += 0.000001;	//iteratives vergroessern des Suchthresholds
 	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
 	
-	while(!g2write){}
-	clock_t mainEnd = clock() / (double)CLOCKS_PER_SEC * 1000;
-	cout << "Calculations finished.\n-Overall time: " << mainEnd-mainStart << "ms" << endl;
-	sleepcp(1000);
-	
 	if(thres >= 0.01) cout << "--search inconclusive after " << end-start << "ms" << endl;
 	else{
-		cout << endl << endl;
 		cout << "Vectorsearch was conclusive after " << end-start << "ms" << endl;
 		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad"  << endl;
 		cout << "-Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
 		cout << "-Solution IDs: " << solutionIDs.rID[0] << " " << solutionIDs.rID[1] << " " << solutionIDs.rID[2] << endl;
 	}
-	g1write = true;
 }
 
 int main() {
@@ -198,11 +185,16 @@ int main() {
 	cout << "__________________________________________________________________________" << endl;
 	
 	//Multithreading code
-	g1write = g2write = false;
 	thread g1(generation1,fname2,alpha2,alpha1,beta);
 	thread g2(generation2,fname2,central,avg, mainStart);
-	g1.join();
 	g2.join();
+	g1.join();
+	//Non Multithreading code
+	//~ generation1(fname2,alpha2,alpha1,beta);
+	//~ generation2(fname2,central,avg, mainStart);
+	
+	clock_t mainEnd = clock() / (double)CLOCKS_PER_SEC * 1000;
+	cout << "Overall time: " << mainEnd-mainStart << "ms" << endl;
 
     return 0;
 }
