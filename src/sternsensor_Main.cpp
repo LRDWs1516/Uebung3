@@ -6,9 +6,14 @@
 #include "catalogmanipulation.h"
 #include "rotationsmatrix.h"
 #include "vectorCatalog.h"
+#include <thread>
+
+using namespace std;
 
 #define FOCUS		25.0f	//in mm
 #define PIXELSIZE	5.8f	//in um
+
+bool g1write, g2write;
 
 void sleepcp(int milliseconds) // cross-platform sleep function
 {
@@ -70,10 +75,66 @@ double getStarAng3(Point2D a, Point2D b, Point2D c){
 	return  acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
 }
 
+void generation1(const char * fname2, double alpha2, double alpha1, double beta){
 
+    clock_t start1 = clock() / (double)CLOCKS_PER_SEC * 1000;
+	Catalog c;
+	c.makeCatalog(fname2);
+	cout << "Starlist from " << fname2 << " created" << endl;
+	c.setTriangleCatalog();
+	Finder f(c.getHeadTrilog());
+	cout << "Trianglelist created" << endl;
+	cout << "Listsearching" << endl;
+	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
+	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
+	
+	g2write = true;
+	while(!g1write){}
+	
+	cout << endl << endl;
+	cout << "Listsearch was conclusive after: " << end1-start1 << "ms" << endl;
+	cout << "-Angles " << match->alpha1 << " " << match->alpha2 << " " << match->beta << endl;
+	cout << "-Solution IDs: " << match->id1 << " " << match->id2 << " " << match->id3 << endl;
+}
+
+void generation2(const char * fname2, Triangle central, double avg, clock_t mainStart){
+
+	clock_t start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	Catalog c2;
+	c2.makeCatalog("catalog.txt");
+	StarCatalog cat;
+	cat.translateCatalog(c2);
+	clock_t end = clock() / (double)CLOCKS_PER_SEC * 1000; 			//###
+	cout << "Starvector from " << fname2 << " created after " << end-start << "ms" << endl;
+	TriangleCatalog tcat;
+	tcat.createCatalog(cat, avg);
+	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
+	cout << "Trianglevector completed after " << end-start << "ms" << endl;
+	cout << "Vectorsearching" << endl;
+	Vector3D solutionAngles(0,0,0);
+	RID3 solutionIDs(0,0,0);
+	double thres = 0;																								//
+	while(!tcat.containsTriangle(central, thres, &solutionAngles, &solutionIDs) && thres < 0.01) thres += 0.000001;	//iteratives vergroessern des Suchthresholds
+	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
+	
+	while(!g2write){}
+	clock_t mainEnd = clock() / (double)CLOCKS_PER_SEC * 1000;
+	cout << "Calculations finished.\n-Overall time: " << mainEnd-mainStart << "ms" << endl;
+	sleepcp(1000);
+	
+	if(thres >= 0.01) cout << "--search inconclusive after " << end-start << "ms" << endl;
+	else{
+		cout << endl << endl;
+		cout << "Vectorsearch was conclusive after " << end-start << "ms" << endl;
+		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad"  << endl;
+		cout << "-Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
+		cout << "-Solution IDs: " << solutionIDs.rID[0] << " " << solutionIDs.rID[1] << " " << solutionIDs.rID[2] << endl;
+	}
+	g1write = true;
+}
 
 int main() {
-
+	clock_t mainStart = clock() / (double)CLOCKS_PER_SEC * 1000;
 	Color white(255,255,255);
 	Color red(0,0,255);
 	Color pink(255,0,200);
@@ -82,9 +143,13 @@ int main() {
 
     Image first, second;
     PointArray fst;
-    first.readImageFromFile("Sterne.bmp", 1);
+    const char * fname1 = "Sterne.bmp";
+    const char * fname2 = "catalog.txt";
+    cout << "Image: " << fname1 << endl;
+    first.readImageFromFile(fname1, 1);
     Point2D fov = getfov(FOCUS, PIXELSIZE, first);
-    double avg = getAvgAng(fov, first); //avg rad/pixel
+    //Berechnung Kameraparameter
+    double avg = getAvgAng(fov, first); 				//avg rad/pixel
 
     second = first;
     second.thresholdImage(0); 							//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
@@ -97,8 +162,7 @@ int main() {
     second.drawArrayToImage(fst.startPoints, white); 	//Alle Startpunkte die in fst.fill2() gefunden wurden
     													//gr�n einzeichnen (je nur 1 Pixel pro Objekt)
     second.writeImageToFile("sterne2.bmp"); 			//Zwischenergebnis speichern
-
-    cout << "found " << fst.allObjects.size() << " objects." << endl << endl;
+    cout << "-found " << fst.allObjects.size() << " objects." << endl;
 
     for(int i = 0; i<fst.allObjects.size(); i++){		//Alle gefundenen Blobs in unterschiedlichen Farben einzeichnen
 		second.drawArrayToImage(fst.allObjects.at(i), Color(50+i*20,100+i*10,200 + i*5));
@@ -106,7 +170,8 @@ int main() {
 
 	//Calculate IDs of most central Triangle of stars (central 0, triplet 0 and 1)
     second.writeImageToFile("sterne3.bmp");//Bild speichern
-
+    
+	cout << "__________________________________________________________________________" << endl;
 	cout << "Searching for central Triangle in Image" << endl;
     vector<Point2D> triplet;
     triplet = fst.getCentralTriangle(first);
@@ -123,62 +188,19 @@ int main() {
     double beta = getStarAng2((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
    cout << "--BETA 1: " << beta << endl;
    beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-   cout << "--BETA 2: " << beta << endl << endl;
+   cout << "--BETA 2: " << beta << endl;
 
     first.drawCross((Point2D)triplet.at(0),0,green,0);
     first.drawCross((Point2D)triplet.at(1),0,white,0);
     first.drawCross((Point2D)triplet.at(2),0,red,0);
     first.writeImageToFile("sterne4.bmp");
 
-	cout << "__________________________________________________________________________" << endl;
-	cout << "\"Listsearching\"" << endl;
-    cout << "-Creating list of stars" << endl;
-    clock_t start1 = clock() / (double)CLOCKS_PER_SEC * 1000;
-	Catalog c;
-	c.makeCatalog("catalog.txt");
-	cout << "--Done Listing" << endl;
-	cout << "-Creating list of triangles" << endl;
-	c.setTriangleCatalog();
-	cout << "--Done listing" << endl;
-	
-	cout << "-Searching for matching triangle" << endl;
-	Finder f(c.getHeadTrilog());
-	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
-	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
-	cout << "--search conclusive after: " << end1-start1 << "ms" << endl;
-
-	cout << "__________________________________________________________________________" << endl;
-	cout << "\"Vectorsearching\":" << endl;
-	cout << "-Creating vector of stars from list of stars now" << endl;
-	clock_t start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
-	Catalog c2;
-	c2.makeCatalog("catalog.txt");
-	StarCatalog cat;
-	cat.translateCatalog(c2);
-	clock_t end = clock() / (double)CLOCKS_PER_SEC * 1000; 			//###
-	cout << "--vector completed after " << end-start << "ms" << endl;
-	cout << "-Creating vector of triangles from vector of stars" << endl;
-	TriangleCatalog tcat;
-	tcat.createCatalog(cat, avg);
-	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
-	cout << "--vector completed after " << end-start << "ms" << endl << endl;
-	cout << "-iteratively searching for best match" << endl;
-	Vector3D solutionAngles(0,0,0);
-	RID3 solutionIDs(0,0,0);
-	double thres = 0;																								//
-	while(!tcat.containsTriangle(central, thres, &solutionAngles, &solutionIDs) && thres < 0.01) thres += 0.000001;	//iteratives vergroessern des Suchthresholds
-	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
-	if(thres >= 0.01) cout << "--search inconclusive after " << end-start << "ms" << endl;
-	else{
-		cout << "--Match found" << endl;
-		cout << "---Match accuracy: " << thres*180/M_PI << "°(deg), bzw. " << thres << " rad"  << endl;
-		cout << "---Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
-		cout << "--Solution IDs: " << solutionIDs.rID[0] << " " << solutionIDs.rID[1] << " " << solutionIDs.rID[2] << endl;
-		cout << "---search conclusive after " << end-start << "ms" << endl;
-	}
-	cout << "__________________________________________________________________________" << endl;
-
-	cout << "Done" << endl;
+	//Multithreading
+	g1write = g2write = false;
+	thread g1(generation1,fname2,alpha2,alpha1,beta);
+	thread g2(generation2,fname2,central,avg, mainStart);
+	g1.join();
+	g2.join();
 
     return 0;
 

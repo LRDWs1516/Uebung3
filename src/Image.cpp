@@ -47,7 +47,7 @@ bool Image::readImageFromFile(const char * fname, int type){
     filesize = getFilesize(image_in);
     overhead = new char[start-1];
 
-    cout << "W: " << w << " H: " << h << " start: " << start << " Fsize: " << filesize << endl;
+    cout << "-W: " << w << " H: " << h << " start: " << start << " Fsize: " << filesize << endl;
     //printf("%d,%d,%d,%d\n",w,h,start,filesize);
     uint32_t cnt = 0;
     image_in.seekg(0);

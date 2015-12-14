@@ -1,6 +1,7 @@
-W: 864 H: 640 start: 54 Fsize: 1658934
-found 2161 objects.
-
+Image: Sterne.bmp
+-W: 864 H: 640 start: 54 Fsize: 1658934
+-found 2161 objects.
+__________________________________________________________________________
 Searching for central Triangle in Image
 -Found central triangle:
 --ALPHA 1: 0.00319401
@@ -8,10 +9,9 @@ Searching for central Triangle in Image
 --ALPHA 3: 0.00745887
 --BETA 1: 0.485674
 --BETA 2: 2.34464
-
 __________________________________________________________________________
 "Listsearching"
--Creating list of stars
+-Creating list of stars from "catalog.txt"
 --Done Listing
 -Creating list of triangles
 --Done listing
@@ -25,13 +25,12 @@ __________________________________________________________________________
 -Creating vector of stars from list of stars now
 --vector completed after 115ms
 -Creating vector of triangles from vector of stars
---vector completed after 6699ms
+--vector completed after 6667ms
 
 -iteratively searching for best match
 --Match found
----Match accuracy: 0.00492744°(deg), bzw. 8.6e-05 rad
+---Match accuracy: 0.00492744°(deg) = 17.7388"(arcsec), bzw. 8.6e-05 rad
 ---Angles: 0.00478224 0.00311189 0.00746803
---Solution IDs: 5358 5439 5430
----search conclusive after 7139ms
-__________________________________________________________________________
-Done
+Solution IDs: 5358 5439 5430
+-search conclusive after 7105ms
+Overall time: 8428ms

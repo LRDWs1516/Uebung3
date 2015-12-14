@@ -47,9 +47,9 @@ Finder::Finder(TriangleCatalogEntry *head_trilog){
 			//double d1=sqrt(2-2*cos(tri_vector[0]));
 			//double d2=sqrt(2-2*cos(tri_vector[1]));
 			//double d3=sqrt(2-2*cos(tri_vector[2]));	
-			cout<<"Match found!"<<endl;
-			cout<<"Match angles: alpa1 "<<tri->alpha1<<", alpah2 "<<tri->alpha2 <<", beta "<<tri->beta<<endl;
-			cout<<"Match ids: id1 "<<tri->id1<<", id2 "<<tri->id2<<", id3 "<<tri->id3<<endl;
+			//~ cout<<"Match found!"<<endl;
+			//~ cout<<"Match angles: alpa1 "<<tri->alpha1<<", alpah2 "<<tri->alpha2 <<", beta "<<tri->beta<<endl;
+			//~ cout<<"Match ids: id1 "<<tri->id1<<", id2 "<<tri->id2<<", id3 "<<tri->id3<<endl;
 			//cout<<" d1 "<<d1 <<" d2 "<<d2 << " d3 "<<d3<<endl;
 			return tri;
 		}
