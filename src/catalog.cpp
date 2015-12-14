@@ -102,7 +102,7 @@ TriangleCatalogEntry Catalog::searchTriangle(StarCatalogEntry* self){
 
 	while(star!= NULL){
 		if (star->id!=self->id){
-			double x= (self->x-star->x)*(self->x-star->x);
+			double x=(self->x-star->x)*(self->x-star->x);
 			double y=(self->y-star->y)*(self->y-star->y);	
 			double z=(self->z-star->z)*(self->z-star->z);
 			distance=sqrt(x+y+z);

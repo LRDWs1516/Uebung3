@@ -134,6 +134,10 @@ int TriangleEntry::getID(int i){
 	return this->mainCatalog;
  }
  
+ int StarCatalog::size(){
+	 return this->mainCatalog.size();
+ }
+ 
  void StarCatalog::translateCatalog(Catalog c){
 	 c.reset();
 	 while(c.current->id < 0)c++;
@@ -183,10 +187,8 @@ int TriangleEntry::getID(int i){
 	 return r;
  }
  
- void TriangleCatalog::createCatalog(StarCatalog c, double pxAng){
-	 vector<StarEntry> cat = c.getMainCatalog();
-	 
-	 for(int i = 0; i<cat.size(); i++){
+ void TriangleCatalog::createCatalog(StarCatalog & c, double pxAng){
+	 for(int i = 0; i<c.size(); i++){
 		 RID3 curr = c.findClosest2(i);
 		 curr.rID[0] = i;
 		 Vector3D alphas = c.triangleGetAlpha(curr);

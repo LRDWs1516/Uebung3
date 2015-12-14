@@ -65,6 +65,7 @@ class StarCatalog{
 public:
 	void translateCatalog(Catalog c);
 	vector<StarEntry> getMainCatalog();
+	int size();
 	RID3 findClosest2(int);
 	Vector3D triangleGetAlpha(RID3);
 private:
@@ -73,7 +74,7 @@ private:
 
 class TriangleCatalog{
 public:
-	void createCatalog(StarCatalog, double);
+	void createCatalog(StarCatalog &, double);
 	bool containsTriangle(Triangle, double, Vector3D *, RID3 *);
 private:
 	bool compareTriangle(Triangle, TriangleEntry, double, Vector3D *);
