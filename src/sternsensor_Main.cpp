@@ -80,13 +80,14 @@ void generation1(const char * fname2, double alpha2, double alpha1, double beta)
     clock_t start1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	Catalog c;
 	c.makeCatalog(fname2);
-	cout << "Starlist from " << fname2 << " created" << endl;
+	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
+	cout << "Starlist from " << fname2 << " created after " << end1-start1 << "ms" << endl;
 	c.setTriangleCatalog();
 	Finder f(c.getHeadTrilog());
 	cout << "Trianglelist created" << endl;
 	cout << "Listsearching" << endl;
 	TriangleCatalogEntry * match = f.getMatch(alpha2, alpha1, beta);
-	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
+	end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	
 	g2write = true;
 	while(!g1write){}
@@ -194,8 +195,9 @@ int main() {
     first.drawCross((Point2D)triplet.at(1),0,white,0);
     first.drawCross((Point2D)triplet.at(2),0,red,0);
     first.writeImageToFile("sterne4.bmp");
-
-	//Multithreading the code
+	cout << "__________________________________________________________________________" << endl;
+	
+	//Multithreading code
 	g1write = g2write = false;
 	thread g1(generation1,fname2,alpha2,alpha1,beta);
 	thread g2(generation2,fname2,central,avg, mainStart);
