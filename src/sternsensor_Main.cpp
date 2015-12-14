@@ -203,8 +203,5 @@ int main() {
 	g2.join();
 
     return 0;
-
-
-
 }
 
