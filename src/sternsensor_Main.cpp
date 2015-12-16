@@ -117,7 +117,7 @@ void generation2(StarCatalog cat, const char * fname2, Triangle central, double 
 	if(thres >= 0.01) cout << "--search inconclusive after " << vend-vstart << "ms" << endl;
 	else{
 		cout << "\t#t#Vectorsearch was conclusive after " << vend-vstart << "ms" << endl;
-		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad, " << thres/avg << " pixel-units"  << endl;
+		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  " = " << thres << " rad = " << thres/avg << " pixel-units"  << endl;
 		cout << "-Alphas: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
 		cout << "-Beta: " << acos(-0.5*(tmatch.getD(0)*tmatch.getD(0) - tmatch.getD(1)*tmatch.getD(1) - tmatch.getD(2)*tmatch.getD(2))/(tmatch.getD(1)*tmatch.getD(2))) << endl;
 		cout << "-Solution IDs: " << cat.getMainCatalog().at(solutionIDs.rID[0]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[1]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[2]).getID() << endl;
