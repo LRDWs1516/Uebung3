@@ -101,7 +101,8 @@ void generation2(StarCatalog cat, const char * fname2, Triangle central, double 
 	TriangleCatalog tcat;
 	tcat.createCatalog(cat, avg);
 	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
-	cout << "#t#Trianglevector completed after " << end-start << "ms" << endl;
+	cout << "\t#t#Trianglevector completed after " << end-start << "ms" << endl;
+	cout << "__________________________________________________________________________" << endl;
 	
 	cout << "Vectorsearching" << endl;
 	Vector3D solutionAngles(0,0,0);
@@ -115,12 +116,12 @@ void generation2(StarCatalog cat, const char * fname2, Triangle central, double 
 	
 	if(thres >= 0.01) cout << "--search inconclusive after " << vend-vstart << "ms" << endl;
 	else{
-		cout << "#t#Vectorsearch was conclusive after " << vend-vstart << "ms" << endl;
+		cout << "\t#t#Vectorsearch was conclusive after " << vend-vstart << "ms" << endl;
 		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad, " << thres/avg << " pixel-units"  << endl;
 		cout << "-Alphas: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
 		cout << "-Beta: " << acos(-0.5*(tmatch.getD(0)*tmatch.getD(0) - tmatch.getD(1)*tmatch.getD(1) - tmatch.getD(2)*tmatch.getD(2))/(tmatch.getD(1)*tmatch.getD(2))) << endl;
 		cout << "-Solution IDs: " << cat.getMainCatalog().at(solutionIDs.rID[0]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[1]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[2]).getID() << endl;
-
+	cout << "__________________________________________________________________________" << endl;
 	double mainstar[3];
 	mainstar[0]=cat.getMainCatalog().at(solutionIDs.rID[0]).getE(0);
 	mainstar[1]=cat.getMainCatalog().at(solutionIDs.rID[0]).getE(1);
@@ -137,7 +138,7 @@ void generation2(StarCatalog cat, const char * fname2, Triangle central, double 
 	r.printRotor(1);
 	quaternion quat= r.getQuaternion(mainstar,nextstar);
 	r.printQuat(quat,1);
-	
+	cout << "__________________________________________________________________________" << endl;
 	}
 }
 
@@ -171,7 +172,7 @@ void generateObjects(const char * fname, PointArray * fst, Image * first, vector
     cout << "-found " << fst->allObjects.size() << " objects." << endl;
     
     clock_t stop = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
-    cout << "#t#Imagemanipulations took " << stop-start << "ms" << endl;
+    cout << "\t#t#Imagemanipulation was conclusive after " << stop-start << "ms" << endl;
 	cout << "__________________________________________________________________________" << endl;
 	
 	cout << "Searching for central Triangle in Image" << endl;
@@ -200,7 +201,7 @@ void generateObjects(const char * fname, PointArray * fst, Image * first, vector
     first->drawCross((Point2D)triplet->at(2),0,red,0);
     first->writeImageToFile("sterne3.bmp");				//Kontrollergebnis speichern
     stop = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
-	cout << "#t#Imagesearch took " << stop-start << "ms" << endl << "__________________________________________________________________________" << endl;
+	cout << "\t#t#Imagesearch took " << stop-start << "ms" << endl << "__________________________________________________________________________" << endl;
 }
 
 void parallelMakeCatalog(const char * fname, Catalog * c, StarCatalog * sc){
@@ -209,7 +210,9 @@ void parallelMakeCatalog(const char * fname, Catalog * c, StarCatalog * sc){
 	//c->setTriangleCatalog();
 	sc->translateCatalog(*c);
 	clock_t stop = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
-	cout << "#t#Catalogmaking took " << stop-start << "ms" << endl;
+	cout << "__________________________________________________________________________" << endl;
+	cout << "\t#t#Catalogmaking was conclusive after " << stop-start << "ms" << endl;
+	cout << "__________________________________________________________________________" << endl;
 }
 
 int main() {
@@ -241,7 +244,7 @@ int main() {
 	//g1.join();
 	
 	clock_t mainEnd = clock() / (double)CLOCKS_PER_SEC * 1000;
-	cout << "#t#Overall time: " << mainEnd-mainStart << "ms" << endl;
+	cout << "\t#t#Overall time: " << mainEnd-mainStart << "ms" << endl;
 
     return 0;
 }
