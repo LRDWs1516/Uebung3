@@ -8,6 +8,7 @@
 #include "vectorCatalog.h"
 #include <thread>
 
+
 using namespace std;
 
 #define FOCUS		25.0f	//in mm
@@ -122,6 +123,24 @@ void generation2(const char * fname2, Triangle central, double avg, clock_t main
 		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad -> " << thres/avg << " Pixel Fehler"  << endl;
 		cout << "-Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
 		cout << "-Solution IDs: " << cat.getMainCatalog().at(solutionIDs.rID[0]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[1]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[2]).getID() << endl;
+
+	double mainstar[3];
+	mainstar[0]=cat.getMainCatalog().at(solutionIDs.rID[0]).getX();
+	mainstar[1]=cat.getMainCatalog().at(solutionIDs.rID[0]).getY();
+	mainstar[2]=cat.getMainCatalog().at(solutionIDs.rID[0]).getZ();
+	cout<<mainstar[0]<<" "<<mainstar[1]<<" "<<mainstar[2]<<endl;
+
+	double nextstar[3];
+	nextstar[0]=cat.getMainCatalog().at(solutionIDs.rID[1]).getX();
+	nextstar[1]=cat.getMainCatalog().at(solutionIDs.rID[1]).getY();
+	nextstar[2]=cat.getMainCatalog().at(solutionIDs.rID[1]).getZ();
+	cout<<nextstar[0]<<" "<<nextstar[1]<<" "<<nextstar[2]<<endl;
+	Rotation r;
+	r.getRotationmatrix(mainstar,nextstar);
+	r.printRotor();
+	quaternion quat= r.getQuaternion(mainstar,nextstar);
+	r.printQuat(quat);
+	
 	}
 }
 
@@ -167,12 +186,15 @@ int main() {
     cout << "--ALPHA 2: " << central.alphas[1] << endl;
     cout << "--ALPHA 3: " << central.alphas[2] << endl;
 
+	
+
+
     double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
     double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
 
     double beta = getStarAng2((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
 	cout << "--BETA 1: " << beta << endl;
-	beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
+     beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
 	cout << "--BETA 2: " << beta << endl;
 	
 	//Markierungen einzeichnen

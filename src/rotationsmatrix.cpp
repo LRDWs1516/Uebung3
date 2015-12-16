@@ -5,7 +5,8 @@
 void Rotation::getRotationmatrix(double v[3] , double w[3] ){
 	double u[3] ={v[1]*w[2]-v[2]*w[1],v[2]*w[0]-v[0]*w[2],v[0]*w[1]-v[1]*w[0]};
 	normalize(u);
-	double deg=acos((v[0]*w[0]+v[1]*w[1]+v[2]*w[2])/(sqrt(v[0]+v[1]+v[2]) * sqrt(w[0]+w[1]+w[2])));
+	double wv=(v[0]*w[0])+(v[1]*w[1])+(v[2]*w[2]);
+	double deg=acos(wv/2);
 	
 	double d=(1-cos(deg));
 	
@@ -26,9 +27,19 @@ void Rotation::getRotationmatrix(double v[3] , double w[3] ){
 	this->rotor = ro;
 }
 quaternion Rotation::getQuaternion(double v[3], double w[3]){
+
+
 	double u[3] ={v[1]*w[2]-v[2]*w[1],v[2]*w[0]-v[0]*w[2],v[0]*w[1]-v[1]*w[0]};
-	double deg=acos((v[0]*w[0]+v[1]*w[1]+v[2]*w[2])/(sqrt(v[0]+v[1]+v[2]) * sqrt(w[0]+w[1]+w[2])));
+	cout<<"u"<<u[0]<<" "<<u[1]<<" "<<u[2]<<endl;
+
+	double wv=(v[0]*w[0])+(v[1]*w[1])+(v[2]*w[2]);
+	//double v_betrag=sqrt((v[0])*(v[0])+(v[1])*(v[1])+(v[2])*(v[2]));
+
+	//double w_betrag=sqrt((w[0])*(w[0])+(w[1])*(w[1])+(v[2]-w[2])*(w[2]));	 
+
 	
+	double deg=acos(wv/2);
+	cout<<" deg "<< deg << endl;
 	normalize(u);
 	quaternion q;
 	q.deg=cos(deg/2);

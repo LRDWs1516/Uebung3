@@ -94,6 +94,22 @@ double Vector3D::angleTo(Vector3D second){
  
  int StarEntry::getID(){ return this->id;}
  
+ double StarEntry::getX(){ return this->x;}
+
+ double StarEntry::getY(){ return this->y;}
+
+ double StarEntry::getZ(){ return this->z;}
+
+double* StarEntry::getPositionVector(){
+	
+	double vector[3];
+	vector[0]=this->x;
+	vector[1]=this->y;
+	vector[2]=this->z;
+ 	return vector;
+}
+
+
  double StarEntry::getE(int elem){
 	 switch(elem){
 		 case 0: return this->x;

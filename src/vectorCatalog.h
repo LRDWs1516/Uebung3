@@ -40,7 +40,12 @@ public:
 	StarEntry();
 	int getID();
 	double getE(int);
-	double distanceTo(StarEntry);
+	double distanceTo(StarEntry);	
+	double getX();
+	double getY();
+	double getZ();
+	double* getPositionVector();
+
 private:
 	int id;
 	double x;

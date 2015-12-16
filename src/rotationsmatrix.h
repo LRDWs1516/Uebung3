@@ -19,11 +19,12 @@ public:
 	quaternion getQuaternion(double);
 	void printRotor();
 	void printQuat(quaternion q);
+	quaternion getQuaternion(double[3] , double[3] );
 private:
 	double* RotateX(double , double[3]);
 	double* RotateY(double , double[3]);
 	double* RotateZ(double , double [3]);
 	double* rotate(double*, double[3]);
 	
-	quaternion getQuaternion(double[3] , double[3] );
+
 };
