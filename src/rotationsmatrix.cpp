@@ -1,6 +1,7 @@
 #include <math.h>
 #include "rotationsmatrix.h"
 #include <iostream>
+#include <string>
 
 void Rotation::getRotationmatrix(double v[3] , double w[3] ){
 	double u[3] ={v[1]*w[2]-v[2]*w[1],v[2]*w[0]-v[0]*w[2],v[0]*w[1]-v[1]*w[0]};
@@ -30,7 +31,7 @@ quaternion Rotation::getQuaternion(double v[3], double w[3]){
 
 
 	double u[3] ={v[1]*w[2]-v[2]*w[1],v[2]*w[0]-v[0]*w[2],v[0]*w[1]-v[1]*w[0]};
-	cout<<"u"<<u[0]<<" "<<u[1]<<" "<<u[2]<<endl;
+	//cout<<"u: "<<u[0]<<" "<<u[1]<<" "<<u[2]<<endl;
 
 	double wv=(v[0]*w[0])+(v[1]*w[1])+(v[2]*w[2]);
 	//double v_betrag=sqrt((v[0])*(v[0])+(v[1])*(v[1])+(v[2])*(v[2]));
@@ -39,7 +40,7 @@ quaternion Rotation::getQuaternion(double v[3], double w[3]){
 
 	
 	double deg=acos(wv/2);
-	cout<<" deg "<< deg << endl;
+	//cout<<" deg "<< deg << endl;
 	normalize(u);
 	quaternion q;
 	q.deg=cos(deg/2);
@@ -55,18 +56,31 @@ double* normalize(double u[3]){
 	u[2]=u[2]/u_betrag;
 	return u;
 }
-void Rotation::printRotor(){
+void Rotation::printRotor(unsigned int place){
 	//Schreibt die Rotationsmatrix aus Rotor aus. Muss davor berechnet werden
-	cout <<"Rotor: \n";
-	cout <<this->rotor.at(0).at(0)<<" "<<this->rotor.at(0).at(1)<<" "<<this->rotor.at(0).at(2)<<"\n";
-	cout <<this->rotor.at(1).at(0)<<" "<<this->rotor.at(1).at(1)<<" "<<this->rotor.at(1).at(2)<<"\n";
-	cout <<this->rotor.at(2).at(0)<<" "<<this->rotor.at(2).at(1)<<" "<<this->rotor.at(2).at(2)<<"\n";
+	
+	string pl;
+	
+	for(unsigned int i = 0; i<place; i++){
+		pl.append("-");
+	}
+	
+	cout<< pl <<"Rotor: \n";
+	cout<< pl << "-" <<this->rotor.at(0).at(0)<<" "<<this->rotor.at(0).at(1)<<" "<<this->rotor.at(0).at(2)<<"\n";
+	cout<< pl << "-" <<this->rotor.at(1).at(0)<<" "<<this->rotor.at(1).at(1)<<" "<<this->rotor.at(1).at(2)<<"\n";
+	cout<< pl << "-" <<this->rotor.at(2).at(0)<<" "<<this->rotor.at(2).at(1)<<" "<<this->rotor.at(2).at(2)<<"\n";
 }
-void Rotation::printQuat(quaternion q){
+void Rotation::printQuat(quaternion q, unsigned int place){
 //Schreibt ein übergebenes Quaternionen raus	
+	
+	string pl;
+	
+	for(unsigned int i = 0; i<place; i++){
+		pl.append("-");
+	}
 
-	cout<<"Quaternion:\n";
-	cout<<"Winkel: "<< q.deg<<"\n";
-	cout<<"Vektor: "<< q.x <<" "<<q.y<<" "<<q.z<<"\n";
+	cout << pl << "Quaternion:" << endl;
+	cout << pl << "-" << "Winkel: " << q.deg << endl;
+	cout << pl << "-" << "Vektor: " << q.x << " " << q.y << " " << q.z << endl;
 }
 

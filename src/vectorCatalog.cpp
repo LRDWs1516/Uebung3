@@ -13,6 +13,11 @@
 	alphas[1] = 0;
 	alphas[2] = 0;
 }
+
+Triangle::Triangle(){
+	
+}
+
 void Triangle::setCorners(vector<Point2D> corners){
 	A = corners.at(0);
 	B = corners.at(1);
@@ -26,7 +31,12 @@ void Triangle::calculateAlphas(double avg){
 	alphas[0] *= avg;
 	alphas[1] *= avg;
 	alphas[2] *= avg;
-	
+}
+
+void Triangle::setDists(){
+	dists[0] = B.getDistance(this->C);
+	dists[1] = A.getDistance(this->B);
+	dists[2] = A.getDistance(this->C);
 }
  
  RID3::RID3(int id[3]){
@@ -93,12 +103,6 @@ double Vector3D::angleTo(Vector3D second){
  }
  
  int StarEntry::getID(){ return this->id;}
- 
- double StarEntry::getX(){ return this->x;}
-
- double StarEntry::getY(){ return this->y;}
-
- double StarEntry::getZ(){ return this->z;}
 
 double* StarEntry::getPositionVector(){
 	
@@ -185,6 +189,19 @@ int TriangleEntry::getID(int i){
 	 return re;
  }
  
+  //~ double StarCatalog::triangleGetBeta(RID3 t){
+	 //~ Vector3D r(0,0,0);
+	 //~ StarEntry s[3];
+	 //~ s[0] = this->mainCatalog.at(t.rID[0]);
+	 //~ s[1] = this->mainCatalog.at(t.rID[1]);
+	 //~ s[2] = this->mainCatalog.at(t.rID[2]);
+	 //~ Vector3D starVecs[3];
+	 //~ starVecs[0] = Vector3D(s[0].getE(0), s[0].getE(1), s[0].getE(2));
+	 //~ starVecs[1] = Vector3D(s[1].getE(0), s[1].getE(1), s[1].getE(2));
+	 //~ starVecs[2] = Vector3D(s[2].getE(0), s[2].getE(1), s[2].getE(2));
+	 //~ double beta = getAngleAt(starVecs[0], starVecs[1], starVecs[2]);
+  //~ }
+ 
  Vector3D StarCatalog::triangleGetAlpha(RID3 t){
 	 Vector3D r(0,0,0);
 	 StarEntry s[3];
@@ -203,12 +220,39 @@ int TriangleEntry::getID(int i){
 	 return r;
  }
  
+ void TriangleEntry::setDist(StarCatalog & c){
+	 Vector3D r(0,0,0);
+	 StarEntry s[3];
+	 s[0] = c.getMainCatalog().at(this->rID[0]);
+	 s[1] = c.getMainCatalog().at(this->rID[1]);
+	 s[2] = c.getMainCatalog().at(this->rID[2]);
+	 Vector3D starVecs[3];
+	 starVecs[0] = Vector3D(s[0].getE(0), s[0].getE(1), s[0].getE(2));
+	 starVecs[1] = Vector3D(s[1].getE(0), s[1].getE(1), s[1].getE(2));
+	 starVecs[2] = Vector3D(s[2].getE(0), s[2].getE(1), s[2].getE(2));
+	
+	double dis[3];
+	
+	dis[1] = sqrt((starVecs[1].c[0]-starVecs[0].c[0])*(starVecs[1].c[0]-starVecs[0].c[0]) + (starVecs[1].c[1]-starVecs[0].c[1])*(starVecs[1].c[1]-starVecs[0].c[1]) + (starVecs[1].c[2]-starVecs[0].c[2])*(starVecs[1].c[2]-starVecs[0].c[2]));
+	dis[2] = sqrt((starVecs[2].c[0]-starVecs[0].c[0])*(starVecs[2].c[0]-starVecs[0].c[0]) + (starVecs[2].c[1]-starVecs[0].c[1])*(starVecs[2].c[1]-starVecs[0].c[1]) + (starVecs[2].c[2]-starVecs[0].c[2])*(starVecs[2].c[2]-starVecs[0].c[2]));
+	dis[0] = sqrt((starVecs[2].c[0]-starVecs[1].c[0])*(starVecs[2].c[0]-starVecs[1].c[0]) + (starVecs[2].c[1]-starVecs[1].c[1])*(starVecs[2].c[1]-starVecs[1].c[1]) + (starVecs[2].c[2]-starVecs[1].c[2])*(starVecs[2].c[2]-starVecs[1].c[2]));
+
+	this->d[0] = dis[0];
+	this->d[1] = dis[1];
+	this->d[2] = dis[2];
+}
+
+ double TriangleEntry::getD(int i){
+	 return this->d[i];
+ }
+ 
  void TriangleCatalog::createCatalog(StarCatalog & c, double pxAng){
 	 for(int i = 0; i<c.size(); i++){
 		 RID3 curr = c.findClosest2(i);
-		 curr.rID[0] = i;
+		 curr.rID[0] = i; //Hauptstern ist bei rID[0];
 		 Vector3D alphas = c.triangleGetAlpha(curr);
 		 TriangleEntry additional(curr, alphas);
+		 additional.setDist(c);
 		 this->mainCatalog.push_back(additional);
 	}
  }
@@ -221,18 +265,27 @@ int TriangleEntry::getID(int i){
 			 if(fabs(alphas1.at(j)) <= (fabs(alphas2.at(i))+thres) && alphas1.at(j) >= (fabs(alphas2.at(i))-thres)) alphas2.erase(alphas2.begin() + i);
 		 }
 	}
-	if(alphas2.size() == 0){
+	
+	double beta1 = acos(-0.5*(t1.dists[0]*t1.dists[0] - t1.dists[1]*t1.dists[1] - t1.dists[2]*t1.dists[2])/(t1.dists[1]*t1.dists[2]));
+	double beta2 = acos(-0.5*(t2.getD(0)*t2.getD(0) - t2.getD(1)*t2.getD(1) - t2.getD(2)*t2.getD(2))/(t2.getD(1)*t2.getD(2)));
+	
+	if(alphas2.size() == 0 && (fabs(beta1) - fabs(beta2)) < 0.1){
 		*solution = Vector3D(t2.getalpha(0),t2.getalpha(1),t2.getalpha(2));
 		return true;
 	}
 	return false;
  }
  
- bool TriangleCatalog::containsTriangle(Triangle t, double thres, Vector3D * solutionAngles, RID3 * solutionIDs){
+ TriangleEntry TriangleCatalog::at(int i){
+	 return this->mainCatalog.at(i);
+ }
+ 
+ bool TriangleCatalog::containsTriangle(Triangle t, double thres, Vector3D * solutionAngles, RID3 * solutionIDs, int * id){
 	bool match = false;
 	for(int i = 0; i<this->mainCatalog.size(); i++){
 		if(compareTriangle(t, this->mainCatalog.at(i), thres, solutionAngles)){
 			*solutionIDs = RID3(this->mainCatalog.at(i).getID(0), this->mainCatalog.at(i).getID(1), this->mainCatalog.at(i).getID(2));
+			*id = i;
 			match = true;
 		}
 	}

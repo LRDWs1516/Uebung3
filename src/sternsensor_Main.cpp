@@ -65,7 +65,7 @@ double getStarAng2(Point2D a, Point2D b, Point2D c){
 	return  acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
 }
 
-//Gibt Winkel beta aus zeichnung zurück
+//Gibt Winkel beta aus Zeichnung zurück
 //Annahme: gesucher winkel bei a 
 double getStarAng3(Point2D a, Point2D b, Point2D c){
 	double d1=sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
@@ -74,15 +74,11 @@ double getStarAng3(Point2D a, Point2D b, Point2D c){
 	return  acos((d3*d3-d1*d1-d2*d2)/(-2*d2*d1));
 }
 
-void generation1(const char * fname2, double alpha2, double alpha1, double beta, double avg){
+void generation1(Catalog c, const char * fname2, double alpha2, double alpha1, double beta, double avg){
 
     clock_t start1 = clock() / (double)CLOCKS_PER_SEC * 1000;
-	Catalog c;
-	c.makeCatalog(fname2);
 	cout << "Size of Catalogs: " << c.size() << endl;
 	clock_t end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
-	cout << "Starlist from " << fname2 << " created after " << end1-start1 << "ms" << endl;
-	c.setTriangleCatalog();
 	end1 = clock() / (double)CLOCKS_PER_SEC * 1000;
 	Finder f(c.getHeadTrilog());
 	cout << "Trianglelist created after " << end1-start1 << "ms" << endl;
@@ -97,124 +93,155 @@ void generation1(const char * fname2, double alpha2, double alpha1, double beta,
 	cout << "-Solution IDs: " << match->id1 << " " << match->id2 << " " << match->id3 << endl;
 }
 
-void generation2(const char * fname2, Triangle central, double avg, clock_t mainStart){
+void generation2(StarCatalog cat, const char * fname2, Triangle central, double avg, clock_t mainStart){
 
 	clock_t start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
-	Catalog c2;
-	c2.makeCatalog("catalog.txt");
-	StarCatalog cat;
-	cat.translateCatalog(c2);
 	clock_t end = clock() / (double)CLOCKS_PER_SEC * 1000; 			//###
-	cout << "Starvector from " << fname2 << " created after " << end-start << "ms" << endl;
+	cout << "Creating triangle vector" << endl;
 	TriangleCatalog tcat;
 	tcat.createCatalog(cat, avg);
 	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
-	cout << "Trianglevector completed after " << end-start << "ms" << endl;
+	cout << "#t#Trianglevector completed after " << end-start << "ms" << endl;
+	
 	cout << "Vectorsearching" << endl;
 	Vector3D solutionAngles(0,0,0);
 	RID3 solutionIDs(0,0,0);
 	double thres = 0;																								//
-	while(!tcat.containsTriangle(central, thres, &solutionAngles, &solutionIDs) && thres < 0.01) thres += 0.000001;	//iteratives vergroessern des Suchthresholds
-	end = clock() / (double)CLOCKS_PER_SEC * 1000; 					//###
+	int matchID = 0;																								//
+	clock_t vstart = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	while(!tcat.containsTriangle(central, thres, &solutionAngles, &solutionIDs, &matchID) && thres < 0.01) thres += 0.000001;	//iteratives vergroessern des Suchthresholds
+	clock_t vend = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	TriangleEntry tmatch = tcat.at(matchID);
 	
-	if(thres >= 0.01) cout << "--search inconclusive after " << end-start << "ms" << endl;
+	if(thres >= 0.01) cout << "--search inconclusive after " << vend-vstart << "ms" << endl;
 	else{
-		cout << "Vectorsearch was conclusive after " << end-start << "ms" << endl;
-		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad -> " << thres/avg << " Pixel Fehler"  << endl;
-		cout << "-Angles: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
+		cout << "#t#Vectorsearch was conclusive after " << vend-vstart << "ms" << endl;
+		cout << "-Match accuracy: " << thres*180/M_PI << "°(deg) = " << thres*180/M_PI*3600 << "\"(arcsec)" <<  ", bzw. " << thres << " rad, " << thres/avg << " pixel-units"  << endl;
+		cout << "-Alphas: " << solutionAngles.c[0] << " " << solutionAngles.c[1] << " " << solutionAngles.c[2] << endl;
+		cout << "-Beta: " << acos(-0.5*(tmatch.getD(0)*tmatch.getD(0) - tmatch.getD(1)*tmatch.getD(1) - tmatch.getD(2)*tmatch.getD(2))/(tmatch.getD(1)*tmatch.getD(2))) << endl;
 		cout << "-Solution IDs: " << cat.getMainCatalog().at(solutionIDs.rID[0]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[1]).getID() << " " << cat.getMainCatalog().at(solutionIDs.rID[2]).getID() << endl;
 
 	double mainstar[3];
-	mainstar[0]=cat.getMainCatalog().at(solutionIDs.rID[0]).getX();
-	mainstar[1]=cat.getMainCatalog().at(solutionIDs.rID[0]).getY();
-	mainstar[2]=cat.getMainCatalog().at(solutionIDs.rID[0]).getZ();
-	cout<<mainstar[0]<<" "<<mainstar[1]<<" "<<mainstar[2]<<endl;
+	mainstar[0]=cat.getMainCatalog().at(solutionIDs.rID[0]).getE(0);
+	mainstar[1]=cat.getMainCatalog().at(solutionIDs.rID[0]).getE(1);
+	mainstar[2]=cat.getMainCatalog().at(solutionIDs.rID[0]).getE(2);
+	//cout<<mainstar[0]<<" "<<mainstar[1]<<" "<<mainstar[2]<<endl;
 
 	double nextstar[3];
-	nextstar[0]=cat.getMainCatalog().at(solutionIDs.rID[1]).getX();
-	nextstar[1]=cat.getMainCatalog().at(solutionIDs.rID[1]).getY();
-	nextstar[2]=cat.getMainCatalog().at(solutionIDs.rID[1]).getZ();
-	cout<<nextstar[0]<<" "<<nextstar[1]<<" "<<nextstar[2]<<endl;
+	nextstar[0]=cat.getMainCatalog().at(solutionIDs.rID[1]).getE(0);
+	nextstar[1]=cat.getMainCatalog().at(solutionIDs.rID[1]).getE(1);
+	nextstar[2]=cat.getMainCatalog().at(solutionIDs.rID[1]).getE(2);
+	//cout<<nextstar[0]<<" "<<nextstar[1]<<" "<<nextstar[2]<<endl;
 	Rotation r;
 	r.getRotationmatrix(mainstar,nextstar);
-	r.printRotor();
+	r.printRotor(1);
 	quaternion quat= r.getQuaternion(mainstar,nextstar);
-	r.printQuat(quat);
+	r.printQuat(quat,1);
 	
 	}
 }
 
-int main() {
-	clock_t mainStart = clock() / (double)CLOCKS_PER_SEC * 1000;
+void generateObjects(const char * fname, PointArray * fst, Image * first, vector<Point2D> * triplet, Triangle * central2, double * avg, double * alpha1, double * alpha2, double * beta){
+	clock_t start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	
 	Color white(255,255,255);
 	Color red(0,0,255);
 	Color pink(255,0,200);
 	Color black(0,0,0);
 	Color green(0,255,0);
 
-    Image first, second;
-    PointArray fst;
-    const char * fname1 = "Sterne.bmp";
-    const char * fname2 = "catalog.txt";
-    cout << "Image: " << fname1 << endl;
-    first.readImageFromFile(fname1, 1);
-    Point2D fov = getfov(FOCUS, PIXELSIZE, first);
+    Image second;
+    cout << "Image: " << fname << endl;
+    first->readImageFromFile(fname, 1);
+    Point2D fov = getfov(FOCUS, PIXELSIZE, *first);
     //Berechnung Kameraparameter
-    double avg = getAvgAng(fov, first); 				//avg rad/pixel
-    cout << "-°/Pixel: " << avg*180/M_PI << endl; 
+    *avg = getAvgAng(fov, *first); 				//avg rad/pixel
+    cout << "-°/Pixel: " << *avg*180/M_PI << endl; 
 
-    second = first;
+    second = *first;
     second.thresholdImage(1); 							//dunkle Sterne/Rauschen ausblenden (90 bis 140 scheint funktional)
     second.writeImageToFile("sterne1.bmp"); 			// Zwischenergebnis
-    first = second;
+    *first = second;
 
-    fst.fill2(second,1); 								//Alle hellen Blobs finden
-    fst.getCentrals(first);								//Zentren der Blobs finden WICHTIG FÜR ERKENNUNG IN STERNENKATALOG
-    second.drawBinarysToImage(fst.overlay, pink); 		//Overlay aufzeichnen
-    second.drawArrayToImage(fst.startPoints, white); 	//Alle Startpunkte die in fst.fill2() gefunden wurden
+    fst->fill2(second,1); 								//Alle hellen Blobs finden
+    fst->getCentrals(*first);							//Zentren der Blobs finden WICHTIG FÜR ERKENNUNG IN STERNENKATALOG
+    second.drawBinarysToImage(fst->overlay, pink); 		//Overlay aufzeichnen
+    second.drawArrayToImage(fst->startPoints, white); 	//Alle Startpunkte die in fst.fill2() gefunden wurden
     													//gr�n einzeichnen (je nur 1 Pixel pro Objekt)
-    cout << "-found " << fst.allObjects.size() << " objects." << endl;
+    cout << "-found " << fst->allObjects.size() << " objects." << endl;
     
+    clock_t stop = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+    cout << "#t#Imagemanipulations took " << stop-start << "ms" << endl;
 	cout << "__________________________________________________________________________" << endl;
+	
 	cout << "Searching for central Triangle in Image" << endl;
-    vector<Point2D> triplet;
-    triplet = fst.getCentralTriangle(first);
-    Triangle central(triplet);
+	start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+    *triplet = fst->getCentralTriangle(*first);
+    Triangle central(*triplet);
     cout << "-Found central triangle:" << endl;
-    central.calculateAlphas(avg);
+    central.calculateAlphas(*avg);
+    central.setDists();
+    *central2 = central;
+    
+    *alpha1 = getAng((Point2D)triplet->at(0), (Point2D)triplet->at(1), *avg);
+    *alpha2 = getAng((Point2D)triplet->at(0), (Point2D)triplet->at(2), *avg);
+
+    *beta = getStarAng2(triplet->at(0), triplet->at(1), triplet->at(2));
+	cout << "--BETA 1: " << *beta << endl;
+    *beta = getStarAng3(triplet->at(0), triplet->at(1), triplet->at(2));
+	cout << "--BETA 2: " << *beta << endl;
+    
     cout << "--ALPHA 1: " << central.alphas[0] << endl;
     cout << "--ALPHA 2: " << central.alphas[1] << endl;
-    cout << "--ALPHA 3: " << central.alphas[2] << endl;
-
-	
-
-
-    double alpha1 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(1), avg);
-    double alpha2 = getAng((Point2D)triplet.at(0), (Point2D)triplet.at(2), avg);
-
-    double beta = getStarAng2((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-	cout << "--BETA 1: " << beta << endl;
-     beta = getStarAng3((Point2D)triplet.at(0), (Point2D)triplet.at(1), (Point2D)triplet.at(2));
-	cout << "--BETA 2: " << beta << endl;
-	
+    cout << "--ALPHA 3: " << central.alphas[2] << endl; //Vectorsearch gibt 3 Alphawinkel zurück. Bitte lass das zum Prüfen drinne!
 	//Markierungen einzeichnen
-    first.drawCross((Point2D)triplet.at(0),0,green,0);
-    first.drawCross((Point2D)triplet.at(1),0,white,0);
-    first.drawCross((Point2D)triplet.at(2),0,red,0);
-    first.writeImageToFile("sterne3.bmp");				//Kontrollergebnis speichern
-	cout << "__________________________________________________________________________" << endl;
+    first->drawCross((Point2D)triplet->at(0),0,green,0);
+    first->drawCross((Point2D)triplet->at(1),0,white,0);
+    first->drawCross((Point2D)triplet->at(2),0,red,0);
+    first->writeImageToFile("sterne3.bmp");				//Kontrollergebnis speichern
+    stop = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	cout << "#t#Imagesearch took " << stop-start << "ms" << endl << "__________________________________________________________________________" << endl;
+}
+
+void parallelMakeCatalog(const char * fname, Catalog * c, StarCatalog * sc){
+	clock_t start = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	c->makeCatalog(fname);
+	//c->setTriangleCatalog();
+	sc->translateCatalog(*c);
+	clock_t stop = clock() / (double)CLOCKS_PER_SEC * 1000; 		//###
+	cout << "#t#Catalogmaking took " << stop-start << "ms" << endl;
+}
+
+int main() {
+	clock_t mainStart = clock() / (double)CLOCKS_PER_SEC * 1000;
 	
-	//Multithreading code
-	thread g1(generation1,fname2,alpha2,alpha1,beta,avg);
-	thread g2(generation2,fname2,central,avg, mainStart);
-	g2.join();
-	g1.join();
-	//Non Multithreading code
-	//~ generation1(fname2,alpha2,alpha1,beta,avg);
-	//~ generation2(fname2,central,avg, mainStart);
+	const char * fname1 = "Sterne.bmp";
+    const char * fname2 = "catalog.txt";
+
+    Image first, second;
+    vector<Point2D> triplet;
+    double avg, alpha1, alpha2, beta;
+    PointArray fst;
+    Triangle central;
+    Catalog c;
+    StarCatalog cat;
+    
+    thread t1(generateObjects, fname1, &fst, &first, &triplet, &central, &avg, &alpha1, &alpha2, &beta);
+    thread t2(parallelMakeCatalog, fname2, &c, &cat);
+    
+    t1.join();
+    t2.join();
+    
+	generation2(cat,fname2,central,avg,mainStart);
+	
+	//Multithreading code for both searchalgorithms
+	//thread g1(generation1, c,fname2,alpha2,alpha1,beta,avg);
+	//thread g2(generation2, cat,fname2,central,avg, mainStart);
+	//g2.join();
+	//g1.join();
 	
 	clock_t mainEnd = clock() / (double)CLOCKS_PER_SEC * 1000;
-	cout << "Overall time: " << mainEnd-mainStart << "ms" << endl;
+	cout << "#t#Overall time: " << mainEnd-mainStart << "ms" << endl;
 
     return 0;
 }

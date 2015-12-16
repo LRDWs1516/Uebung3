@@ -17,8 +17,8 @@ public:
 	void getRotationmatrix(double* , double* );
 	vector<vector<double> >  rotor;
 	quaternion getQuaternion(double);
-	void printRotor();
-	void printQuat(quaternion q);
+	void printRotor(unsigned int);
+	void printQuat(quaternion q, unsigned int);
 	quaternion getQuaternion(double[3] , double[3] );
 private:
 	double* RotateX(double , double[3]);
