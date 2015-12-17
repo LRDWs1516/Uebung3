@@ -219,9 +219,9 @@ void Catalog::makeCatalog(const char * fname){
 			//**Umrechnung in Kartesische Koordinaten**	
 			rectascension=rectascension*M_PI/180;
 			declination=declination*M_PI/180;
-			x= f*sin(declination )*cos(rectascension);
-			y= f*sin(declination)*sin(rectascension);
-			z= f*cos(declination);
+			x= sin(declination )*cos(rectascension);
+			y= sin(declination)*sin(rectascension);
+			z= cos(declination);
 			StarCatalogEntry *e= new StarCatalogEntry(s_before,index, x,y,z,mag, rectascension, declination);
 			s_before->next= e;
 			s_before=e;
