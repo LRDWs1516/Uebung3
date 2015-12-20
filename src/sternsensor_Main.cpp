@@ -8,7 +8,6 @@
 #include "vectorCatalog.h"
 #include <thread>
 
-
 using namespace std;
 
 #define FOCUS		25.0f	//in mm

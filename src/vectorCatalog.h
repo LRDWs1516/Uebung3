@@ -4,9 +4,12 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
+#include <thread>
 #include "catalog.h"
 #include "PointArray.h"
 #include "vectorCatalog.h"
+
+using namespace std;
 
 struct Triangle{
 	Point2D A;
@@ -44,7 +47,7 @@ public:
 	int getID();
 	double getE(int);
 	double distanceTo(StarEntry);	
-	double* getPositionVector();
+	double * getPositionVector();
 
 private:
 	int id;
@@ -60,10 +63,10 @@ class StarCatalog{
 public:
 	void translateCatalog(Catalog c);
 	vector<StarEntry> getMainCatalog();
+	vector<StarEntry> * getMainCatalogP();
 	int size();
 	RID3 findClosest2(int);
 	Vector3D triangleGetAlpha(RID3);
-	//~ double triangleGetBeta(RID3);
 private:
 	vector<StarEntry> mainCatalog;
 };
@@ -71,8 +74,7 @@ private:
 class TriangleEntry{
 public:
 	TriangleEntry(RID3, Vector3D);
-	//TriangleEntry(RID3, Vector3D, Vector3D);
-	void setDist(StarCatalog &);
+	void setDist(StarCatalog *);
 	double getalpha(int);
 	int getID(int);
 	double getD(int);
@@ -84,6 +86,7 @@ private:
 
 class TriangleCatalog{
 public:
+	void printSth(StarCatalog *, double, int, int, vector<TriangleEntry> *);
 	void createCatalog(StarCatalog &, double);
 	bool containsTriangle(Triangle, double, Vector3D *, RID3 *, int *);
 	TriangleEntry at(int);

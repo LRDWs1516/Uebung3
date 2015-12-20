@@ -104,9 +104,9 @@ double Vector3D::angleTo(Vector3D second){
  
  int StarEntry::getID(){ return this->id;}
 
-double* StarEntry::getPositionVector(){
+double * StarEntry::getPositionVector(){
 	
-	double vector[3];
+	double * vector = new double[3];
 	vector[0]=this->x;
 	vector[1]=this->y;
 	vector[2]=this->z;
@@ -153,6 +153,10 @@ int TriangleEntry::getID(int i){
   vector<StarEntry> StarCatalog::getMainCatalog(){
 	return this->mainCatalog;
  }
+ 
+  vector<StarEntry> * StarCatalog::getMainCatalogP(){
+	  return &this->mainCatalog;
+  }
  
  int StarCatalog::size(){
 	 return this->mainCatalog.size();
@@ -220,12 +224,12 @@ int TriangleEntry::getID(int i){
 	 return r;
  }
  
- void TriangleEntry::setDist(StarCatalog & c){
+ void TriangleEntry::setDist(StarCatalog * c){
 	 Vector3D r(0,0,0);
 	 StarEntry s[3];
-	 s[0] = c.getMainCatalog().at(this->rID[0]);
-	 s[1] = c.getMainCatalog().at(this->rID[1]);
-	 s[2] = c.getMainCatalog().at(this->rID[2]);
+	 s[0] = c->getMainCatalogP()->at(this->rID[0]);
+	 s[1] = c->getMainCatalogP()->at(this->rID[1]);
+	 s[2] = c->getMainCatalogP()->at(this->rID[2]);
 	 Vector3D starVecs[3];
 	 starVecs[0] = Vector3D(s[0].getE(0), s[0].getE(1), s[0].getE(2));
 	 starVecs[1] = Vector3D(s[1].getE(0), s[1].getE(1), s[1].getE(2));
@@ -246,15 +250,42 @@ int TriangleEntry::getID(int i){
 	 return this->d[i];
  }
  
- void TriangleCatalog::createCatalog(StarCatalog & c, double pxAng){
-	 for(int i = 0; i<c.size(); i++){
-		 RID3 curr = c.findClosest2(i);
+ void TriangleCatalog::printSth(StarCatalog * c, double px, int a, int e, vector<TriangleEntry> * triangles){
+	 for(int i = a; i<e; i++){
+		 RID3 curr = c->findClosest2(i);
 		 curr.rID[0] = i; //Hauptstern ist bei rID[0];
-		 Vector3D alphas = c.triangleGetAlpha(curr);
+		 Vector3D alphas = c->triangleGetAlpha(curr);
 		 TriangleEntry additional(curr, alphas);
 		 additional.setDist(c);
-		 this->mainCatalog.push_back(additional);
-	}
+		 triangles->push_back(additional);
+	 }
+ }
+ 
+ void TriangleCatalog::createCatalog(StarCatalog & c, double pxAng){
+	vector<TriangleEntry> triangles1;
+	vector<TriangleEntry> triangles2;
+	
+	int start = 0;
+	int half = c.size()/2;
+	int end = c.size();
+	
+	thread tr1(&TriangleCatalog::printSth, this, &c, pxAng, start, half, &triangles1);
+	thread tr2(&TriangleCatalog::printSth, this, &c, pxAng, half+1, end, &triangles2);
+	
+	tr1.join();
+	tr2.join();
+	
+	this->mainCatalog.insert(this->mainCatalog.end(), triangles1.begin(), triangles1.end());
+	this->mainCatalog.insert(this->mainCatalog.end(), triangles2.begin(), triangles2.end());
+
+	//~ for(int i = 0; i<c.size(); i++){
+		 //~ RID3 curr = c.findClosest2(i);
+		 //~ curr.rID[0] = i; //Hauptstern ist bei rID[0];
+		 //~ Vector3D alphas = c.triangleGetAlpha(curr);
+		 //~ TriangleEntry additional(curr, alphas);
+		 //~ additional.setDist(&c);
+		 //~ this->mainCatalog.push_back(additional);
+	//~ }
  }
  
  bool TriangleCatalog::compareTriangle(Triangle t1, TriangleEntry t2, double thres, Vector3D * solution){
